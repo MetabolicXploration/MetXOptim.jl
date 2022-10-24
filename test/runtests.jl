@@ -1,7 +1,16 @@
-using MetXOptim
 using Test
+using MetXBase
+using MetXOptim
+using MetXNetHub
+using JuMP
+using Clp
 
 @testset "MetXOptim.jl" begin
-    # Write your tests here.
+    
+    # Base
+    include("net_interface_tests.jl")
+
+    # TODO: test LP results against COBREXA methods
+
     @test true
 end
