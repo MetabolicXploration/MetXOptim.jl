@@ -24,6 +24,7 @@ module MetXOptim
     include("FluxObModelUtils/constraints.jl")
     include("FluxObModelUtils/fba.jl")
     include("FluxObModelUtils/interfaces.jl")
+    include("FluxObModelUtils/objectives.jl")
 
     #! include FBA
 

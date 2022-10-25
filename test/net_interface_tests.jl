@@ -1,6 +1,8 @@
 let
     net = MetXNetHub.pull_net("ecoli_core")
-    opmodel = MetXOptim.FBAFluxOpModel(net, Clp.Optimizer) 
+    opmodel = MetXOptim.FBAFluxOpModel(net, Clp.Optimizer; 
+        netfields = fieldnames(typeof(net))
+    ) 
 
     @test all(metabolites(net, metabolites(net)) .== metabolites(opmodel, metabolites(opmodel)))
     @test all(balance(net, metabolites(net)) .== balance(opmodel, metabolites(opmodel)))

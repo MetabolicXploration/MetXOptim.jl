@@ -2,6 +2,7 @@
 # TODO: do more methods
 
 # Common methods to work with jump models
+export jump
 jump(jpm::JuMP.Model) = jpm
 jump(opm::AbstractOpModel) = error("Method jump(opm::$(typeof(opm))) not defined!")
 jump(jpm::JuMP.Model, k) = jpm[k]
@@ -19,6 +20,11 @@ get_jpvars(opm::AbstractOpModel) = jump(opm, _OPMODEL_VARIABLES_KEY)
 set_jpvars!(jpm::JuMP.Model, N::Integer) = 
     (jpm[_OPMODEL_VARIABLES_KEY] = @JuMP.variable(jpm, [1:N]); jpm)
 set_jpvars!(opm::AbstractOpModel, N::Integer) = set_jpvars!(jump(opm), N)
+
+solution(opm::AbstractOpModel) = JuMP.value.(get_jpvars(opm))
+
+import JuMP.termination_status
+termination_status(opm::AbstractOpModel) = JuMP.termination_status(jump(opm))
 
 import JuMP.normalized_rhs
 normalized_rhs(opm::AbstractOpModel, cons_key::Symbol) = JuMP.normalized_rhs.(jump(opm, cons_key))
@@ -62,4 +68,7 @@ function set_start_value(opm::AbstractOpModel, vals)
 end
 
 import JuMP.haskey
-haskey(opm::AbstractOpModel, key) = haskey(jump(opm), key)
+haskey(opm::AbstractOpModel, key) = JuMP.haskey(jump(opm), key)
+
+import JuMP.optimize!
+optimize!(opm::AbstractOpModel; kwargs...) = JuMP.optimize!(jump(opm); kwargs...)
