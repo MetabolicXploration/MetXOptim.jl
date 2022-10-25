@@ -74,4 +74,5 @@ export jump
 jump(m::FluxOpModel) = m.jump
 jump(m::FluxOpModel, k) = m.jump[k]
 
+export solution
 solution(m::FluxOpModel, ider) = solution(m)[rxnindex(m, ider)]
