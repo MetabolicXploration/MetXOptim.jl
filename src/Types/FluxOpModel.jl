@@ -15,16 +15,20 @@ struct FluxOpModel <: AbstractOpModel
 end
 export FluxOpModel
 
-FluxOpModel(jpm::JuMP.Model) = 
-    FluxOpModel(jpm, Dict())
+FluxOpModel(jpm::JuMP.Model) = FluxOpModel(jpm, Dict())
 
 function FluxOpModel(jpm::JuMP.Model, net::MetNet;
-        netfields = [:rxns, :c]
+        netfields = [:rxns, :c], # fields to chache
+        netcopy = false # flag to make an internal copy of the net fields
     )
+
+    # model
     opm = FluxOpModel(jpm)
 
     # cache net
-    net1 = MetNet(; extract_fields(net, netfields)...)
+    net0 = extract_fields(net, netfields)
+    net0 = netcopy ? deepcopy(net0) : net0
+    net1 = MetNet(; net0...)
     metnet!(opm, net1)
 
     return opm

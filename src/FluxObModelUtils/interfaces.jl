@@ -65,6 +65,7 @@ import MetXBase.lin_objective
 lin_objective(m::FluxOpModel, args...) = lin_objective(metnet(m), args...)
 
 import MetXBase.lin_objective!
+# change both, the JuMP objective and the cached net lin_objective vector
 function lin_objective!(m::FluxOpModel, args...)
     net = metnet(m)
     lin_objective!(net, args...)
@@ -78,7 +79,10 @@ export jump
 jump(m::FluxOpModel) = m.jump
 jump(m::FluxOpModel, k) = m.jump[k]
 
+get_jpvars(m::FluxOpModel, ider) = get_jpvars(m)[rxnindex(m, ider)]
+
 export solution
-solution(m::FluxOpModel, ider) = solution(m)[rxnindex(m, ider)]
+solution(m::FluxOpModel) = _solution(m)
+solution(m::FluxOpModel, ider) = _solution(m, rxnindex(m, ider))
 
 

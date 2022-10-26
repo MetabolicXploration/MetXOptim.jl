@@ -21,7 +21,10 @@ set_jpvars!(jpm::JuMP.Model, N::Integer) =
     (jpm[_OPMODEL_VARIABLES_KEY] = @JuMP.variable(jpm, [1:N]); jpm)
 set_jpvars!(opm::AbstractOpModel, N::Integer) = set_jpvars!(jump(opm), N)
 
-solution(opm::AbstractOpModel) = JuMP.value.(get_jpvars(opm))
+# TODO: Fix dispatch issue (try `const solution = _solution` and see)
+_solution(opm::AbstractOpModel) = JuMP.value.(get_jpvars(opm))
+_solution(opm::AbstractOpModel, idx::Int) = JuMP.value(get_jpvars(opm)[idx])
+_solution(opm::AbstractOpModel, idxs) = JuMP.value.(get_jpvars(opm)[idxs])
 
 import JuMP.termination_status
 termination_status(opm::AbstractOpModel) = JuMP.termination_status(jump(opm))
