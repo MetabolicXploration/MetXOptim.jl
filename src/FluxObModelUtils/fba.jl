@@ -1,8 +1,12 @@
 ## ------------------------------------------------------------------
 # Just a wrapper that add all the basic cosntraints of FBA
-function FBAFluxOpModel(net::MetNet, jump_args...; opmodel_kwargs...)
+export FBAFluxOpModel
+function FBAFluxOpModel(net::MetNet, jump_args...; 
+        netfields = [:rxns, :c],
+        opmodel_kwargs...
+    )
 
-    opm = FluxOpModel(net, jump_args...; opmodel_kwargs...)
+    opm = FluxOpModel(net, jump_args...; netfields, opmodel_kwargs...)
     JuMP.set_silent(opm)
 
     set_jpvars!(opm, rxns_count(net))

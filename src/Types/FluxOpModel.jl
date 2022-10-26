@@ -19,7 +19,7 @@ FluxOpModel(jpm::JuMP.Model) =
     FluxOpModel(jpm, Dict())
 
 function FluxOpModel(jpm::JuMP.Model, net::MetNet;
-        netfields = [:rxns]
+        netfields = [:rxns, :c]
     )
     opm = FluxOpModel(jpm)
 

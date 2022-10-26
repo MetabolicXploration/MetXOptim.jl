@@ -25,33 +25,26 @@ import MetXBase.lb
 import MetXBase.lb!
 lb(m::FluxOpModel) = JuMP.normalized_rhs.(get_lower_bound_cons(m))
 lb(m::FluxOpModel, ridx) = lb(m)[rxnindex(m, ridx)]
-# function lb!(opm::FluxOpModel, cidxs, lb)
-#     jpm = jump(opm)
-#     if haskey(jpm, _LB_CON_KEY)
-#         up_con_rhs!(jpm, _LB_CON_KEY, lb, cidxs)
-#     else
-#         x = jp_vars(opm)
-#         jpm[_LB_CON_KEY] = @JuMP.constraint(jpm, x .>= lb, base_name = string(_LB_CON_KEY))
-#     end
-#     return opm
-# end
-# lb!(m::FluxOpModel, lb) = lb!(m, :, m)
+function lb!(m::FluxOpModel, idxs, lb)
+    upcons = get_lower_bound_cons(m)
+    cidxs = rxnindex(m, idxs)
+    up_con_rhs!(upcons, lb, cidxs)
+    return m
+end
+lb!(m::FluxOpModel, lb) = lb!(m, 1:_length(m), lb)
 
 # ub
 import MetXBase.ub
 import MetXBase.ub!
 ub(m::FluxOpModel) = JuMP.normalized_rhs.(get_upper_bound_cons(m))
 ub(m::FluxOpModel, ider) = ub(m)[rxnindex(m, ider)]
-# function ub!(m::FluxOpModel, cidxs, ub)
-#     if haskey(m, _UB_CON_KEY)
-#         up_con_rhs!(m, _UB_CON_KEY, ub, cidxs)
-#     else
-#         x = _get_vars(m)
-#         m[_UB_CON_KEY] = @JuMP.constraint(m, x .<= ub, base_name = string(_UB_CON_KEY))
-#     end
-#     return m
-# end
-# ub!(m::FluxOpModel, ub) = ub!(m, 1:_length(m), ub)
+function ub!(m::FluxOpModel, idxs, ub)
+    upcons = get_upper_bound_cons(m)
+    cidxs = rxnindex(m, idxs)
+    up_con_rhs!(upcons, ub, cidxs)
+    return m
+end
+ub!(m::FluxOpModel, ub) = ub!(m, 1:_length(m), ub)
 
 import MetXBase.bounds
 import MetXBase.bounds!
@@ -67,6 +60,17 @@ end
 import MetXBase.balance
 balance(m::FluxOpModel) = JuMP.normalized_rhs.(get_balance_cons(m))
 balance(m::FluxOpModel, ider) = balance(m)[metindex(m, ider)]
+
+import MetXBase.lin_objective
+lin_objective(m::FluxOpModel, args...) = lin_objective(metnet(m), args...)
+
+import MetXBase.lin_objective!
+function lin_objective!(m::FluxOpModel, args...)
+    net = metnet(m)
+    lin_objective!(net, args...)
+    set_linear_obj!(net, metnet(m))
+    return m
+end
     
 # -------------------------------------------------------------------
 # jump
@@ -76,3 +80,5 @@ jump(m::FluxOpModel, k) = m.jump[k]
 
 export solution
 solution(m::FluxOpModel, ider) = solution(m)[rxnindex(m, ider)]
+
+

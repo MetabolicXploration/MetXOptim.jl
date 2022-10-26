@@ -30,25 +30,27 @@ import JuMP.normalized_rhs
 normalized_rhs(opm::AbstractOpModel, cons_key::Symbol) = JuMP.normalized_rhs.(jump(opm, cons_key))
 
 function up_con_rhs!(
-        opm::AbstractOpModel, cons_key::Symbol, 
-        vals::Vector, cidxs
+        cons::Vector{<:ConstraintRef}, vals::Vector, cidxs
     )
     @assert length(vals) == length(cidxs)
-    cons = jump(opm, cons_key)
     for (ci, val) in zip(cidxs, vals)
         JuMP.set_normalized_rhs(cons[ci], val)
     end
-    return opm
+    return cons
 end
 
 function up_con_rhs!(
-        opm::AbstractOpModel, cons_key::Symbol, 
-        val::Number, cidx::Integer
+        cons::Vector{<:ConstraintRef}, val::Number, cidxs
     )
-    cons = jump(opm, cons_key)
-    JuMP.set_normalized_rhs(cons[cidx], val)
-    return opm
+    for ci in cidxs
+        JuMP.set_normalized_rhs(cons[ci], val)
+    end
+    return cons
 end
+
+up_con_rhs!(opm::AbstractOpModel, 
+    cons_key::Symbol, vals, cidxs
+) = up_con_rhs!(jump(opm, cons_key), vals, cidxs)
 
 import JuMP.delete!
 function delete!(opm::AbstractOpModel, sym::Symbol)
