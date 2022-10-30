@@ -36,8 +36,8 @@ function fva!(opm::FluxOpModel;
 
     # iterate
     verbose && (prog = Progress(length(ridxs); desc = "Doing FVA (-t1)"))
-    for ri in ridxs
-        fvalb[ri], fvaub[ri] = fva!(opm, ri; T)
+    for (bi, ri) in enumerate(ridxs)
+        fvalb[bi], fvaub[bi] = fva!(opm, ri; T)
         verbose && next!(prog)
     end
     verbose && finish!(prog)
@@ -51,6 +51,7 @@ export fva_th
 function fva_th(net::MetNet, jump_args...;
         ridxs = eachindex(reactions(net)),
         verbose = false,
+        bash_len = 20,
         opmodel_kwargs...
     )
 
@@ -65,20 +66,35 @@ function fva_th(net::MetNet, jump_args...;
     ridxs = rxnindex(net, ridxs)
 
     # bounds
-    fvalb = lb(net, ridxs)
-    fvaub = ub(net, ridxs)
-
-    T = eltype(fvalb)
+    fvalb = lb(net, ridxs) |> copy
+    fvaub = ub(net, ridxs) |> copy
 
     # Iterate
     verbose && (prog = Progress(length(ridxs); desc = "Doing FVA (-t$nths)  "))
-    @threads for ri in ridxs
+    
+    nths = nthreads()
+    ch = MetXBase.chunkedChannel(ridxs; 
+        # nchnks = 2*nths
+        chnklen = bash_len
+    )
+    # c = [0 for _ in 1:nths] # Test
+
+    @threads for _ in 1:2*nths
         th = threadid()
-        opm = opm_pool[th]
-        fvalb[ri], fvaub[ri] = fva!(opm, ri; T)
-        verbose && next!(prog)
+        for chk in ch
+            # c[th] += 1
+            opm = opm_pool[th]
+            _ridxs, _lbs, _ubs = fva!(opm; 
+                ridxs = collect(chk),
+                verbose = false
+            )
+            MetXBase._setindex!(fvalb, _ridxs, _lbs)
+            MetXBase._setindex!(fvaub, _ridxs, _ubs)
+            verbose && next!(prog; step = length(_ridxs))
+        end
     end
     verbose && finish!(prog)
+    # @show c
 
     return ridxs, fvalb, fvaub
 end 
@@ -87,12 +103,13 @@ end
 export fva
 function fva(net::MetNet, jump_args...;
         th = false,
+        bash_len = 20,
         ridxs = eachindex(reactions(net)), 
         verbose = false,
         opmodel_kwargs...
     )
     if th
-        return fva_th(net, jump_args...; ridxs, verbose, opmodel_kwargs...)
+        return fva_th(net, jump_args...; ridxs, verbose, bash_len, opmodel_kwargs...)
     else
         opm = FBAFluxOpModel(net, jump_args...; opmodel_kwargs...)
         return fva!(opm; ridxs, verbose)

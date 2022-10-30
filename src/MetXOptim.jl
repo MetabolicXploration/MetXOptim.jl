@@ -1,3 +1,5 @@
+# TODO: see threads issue (no all cpu is used)
+# TODO: introduce callbacks
 module MetXOptim
 
     using MetXBase
@@ -21,10 +23,12 @@ module MetXOptim
 
     #! include FluxObModelUtils
     include("FluxObModelUtils/base.jl")
+    include("FluxObModelUtils/boxing.jl")
     include("FluxObModelUtils/constraints.jl")
     include("FluxObModelUtils/fba.jl")
     include("FluxObModelUtils/fva.jl")
     include("FluxObModelUtils/interfaces.jl")
+    include("FluxObModelUtils/linobj_dep.jl")
     include("FluxObModelUtils/objectives.jl")
 
     #! include FBA

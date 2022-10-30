@@ -69,7 +69,7 @@ import MetXBase.lin_objective!
 function lin_objective!(m::FluxOpModel, args...)
     net = metnet(m)
     lin_objective!(net, args...)
-    set_linear_obj!(net, metnet(m))
+    set_linear_obj!(m, metnet(m))
     return m
 end
     

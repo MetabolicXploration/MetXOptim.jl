@@ -12,6 +12,7 @@ MetXBase = "0b8c4419-604a-4c8e-9eed-0f79de4a140e"
 MetXNetHub = "be9415a8-24b2-49ae-ba75-41eeaa9f722f"
 ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
 
 [compat]
 julia = "1.6"
