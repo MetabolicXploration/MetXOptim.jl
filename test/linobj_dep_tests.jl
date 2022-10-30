@@ -1,4 +1,11 @@
 let
+
+    println()
+    println("="^60)
+    println("LINOBJ DEPENDENCE")
+    println("."^60)
+    println()
+
     net = MetXNetHub.pull_net("ECC2")
     glc_ex = get_extra(net, "EX_GLC")
     glc_idx = rxnindex(net, glc_ex)
