@@ -75,6 +75,6 @@ end
 import JuMP.haskey
 haskey(opm::AbstractOpModel, key) = JuMP.haskey(jump(opm), key)
 
-import JuMP.c
+import JuMP.optimize!
 export optimize!
 optimize!(opm::AbstractOpModel; kwargs...) = JuMP.optimize!(jump(opm); kwargs...)
