@@ -85,4 +85,22 @@ export solution
 solution(m::FluxOpModel) = _solution(m)
 solution(m::FluxOpModel, ider) = _solution(m, rxnindex(m, ider))
 
+import JuMP.objective_value
+export objective_value
+objective_value(m::FluxOpModel) = objective_value(jump(m))
 
+import JuMP.objective_function
+export objective_function
+objective_function(m::FluxOpModel) = objective_function(jump(m))
+
+import JuMP.set_objective_function
+export set_objective_function
+set_objective_function(m::FluxOpModel, f) = set_objective_function(jump(m), f)
+
+import JuMP.set_objective_sense
+export set_objective_sense
+set_objective_sense(m::FluxOpModel, sense) = set_objective_sense(jump(m), sense)
+
+import JuMP.set_objective
+export set_objective
+set_objective(m::FluxOpModel, sense, func) = set_objective(jump(m), sense, func)

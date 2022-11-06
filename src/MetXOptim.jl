@@ -4,7 +4,7 @@ module MetXOptim
 
     using MetXBase
     using MetXNetHub
-    using JuMP, Clp, Ipopt
+    using JuMP, Clp, Ipopt, Tulip
     using ProgressMeter
     using Base.Threads
     using SparseArrays
@@ -20,6 +20,7 @@ module MetXOptim
 
     #! include AbstractOpModelUtils
     include("AbstractOpModelUtils/jump_interface.jl")
+    include("AbstractOpModelUtils/jump_utils.jl")
 
     #! include FluxObModelUtils
     include("FluxObModelUtils/base.jl")

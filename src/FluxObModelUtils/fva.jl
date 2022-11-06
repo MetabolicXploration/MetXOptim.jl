@@ -40,7 +40,7 @@ function fva!(opm::FluxOpModel;
         fvalb[bi], fvaub[bi] = fva!(opm, ri; T)
         verbose && next!(prog)
     end
-    verbose && finish!(prog)
+    verbose && (finish!(prog); flush(stdout); flush(stderr))
 
     # box
     return ridxs, fvalb, fvaub
@@ -93,7 +93,7 @@ function fva_th(net::MetNet, jump_args...;
             verbose && next!(prog; step = length(_ridxs))
         end
     end
-    verbose && finish!(prog)
+    verbose && (finish!(prog); flush(stdout); flush(stderr))
     # @show c
 
     return ridxs, fvalb, fvaub
