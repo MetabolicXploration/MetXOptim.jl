@@ -9,7 +9,9 @@ let
 
     verbose = true
 
-    net1 = MetXNetHub.pull_net("ECC2")
+    model_id = "ECC2"
+    # model_id = "ecoli_core"
+    net1 = MetXNetHub.pull_net(model_id)
     glc_ex = get_extra(net1, "EX_GLC")
     biom_id = get_extra(net1, "BIOM")
     

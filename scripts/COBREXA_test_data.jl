@@ -1,6 +1,6 @@
 # ------------------------------------------------------
 using MetXOptim
-using MetXOptim.Clp
+using MetXOptim.GLPK
 using MetXOptim.MetXBase
 using MetXOptim.MetXBase.COBREXA
 using MetXOptim.MetXNetHub
@@ -8,7 +8,7 @@ using MetXOptim.MetXNetHub
 
 # ------------------------------------------------------
 const TEST_DATDIR = joinpath(pkgdir(MetXOptim), "test", "data")
-const TESTS_LINSOLVER = Clp.Optimizer
+const TESTS_LINSOLVER = GLPK.Optimizer
 
 ## ------------------------------------------------------
 # update OpModel

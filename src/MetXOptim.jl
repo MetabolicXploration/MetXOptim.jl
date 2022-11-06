@@ -4,10 +4,12 @@ module MetXOptim
 
     using MetXBase
     using MetXNetHub
-    using JuMP, Clp, Ipopt, Tulip
+    using JuMP
     using ProgressMeter
     using Base.Threads
     using SparseArrays
+    
+    import GLPK, Clp, Ipopt, Tulip
 
     #! include .
     

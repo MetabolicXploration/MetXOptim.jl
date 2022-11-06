@@ -7,7 +7,10 @@ using MetXNetHub
 import GLPK, Clp, Tulip
 import MetXBase: COBREXA
 
-const TESTS_LINSOLVER = Clp.Optimizer
+import Random
+Random.seed!(1234)
+
+const TESTS_LINSOLVER = GLPK.Optimizer
 const TEST_DATDIR = joinpath(pkgdir(MetXOptim), "test", "data")
 
 @testset "MetXOptim.jl" begin
