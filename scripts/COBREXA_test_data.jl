@@ -11,6 +11,52 @@ const TEST_DATDIR = joinpath(pkgdir(MetXOptim), "test", "data")
 const TESTS_LINSOLVER = Clp.Optimizer
 
 ## ------------------------------------------------------
+# update OpModel
+let
+    println()
+    println("="^60)
+    println("UPDATE OPMODEL")
+    println("."^60)
+    println()
+
+    # globals
+    lbs = range(-10.0, -0.5; length = 10)
+
+    for model_id in ["ecoli_core", "ECC2", "iJR904"]
+        
+        # MetX
+        netX = MetXNetHub.pull_net(model_id)
+        glc_id = get_extra(netX, "EX_GLC")
+        biom_id = get_extra(netX, "BIOM")
+
+        # COBREXA
+        netCB = convert(COBREXA.CoreModel, netX)
+
+        netCB_biomv = Float64[]
+        for lb_ in lbs
+            COBREXA.change_bound!(netCB, glc_id; lower = lb_)
+            sol = COBREXA.flux_balance_analysis_dict(netCB, TESTS_LINSOLVER;
+                modifications = [COBREXA.silence],
+            )
+            push!(netCB_biomv, sol[biom_id])
+        end
+
+        # --------------------
+        # SAVE
+        mkpath(TEST_DATDIR)
+        tsv_str = string(
+            join(netCB_biomv, "\t")
+        )
+        biom_glc_file = joinpath(TEST_DATDIR, string(model_id, "--biom-glc.tsv"))
+        open(biom_glc_file, "w") do io
+            print(io, tsv_str)
+        end
+        
+    end
+    
+end
+
+## ------------------------------------------------------
 # FBA
 let
     println()

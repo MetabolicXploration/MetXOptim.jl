@@ -28,7 +28,7 @@ let
         @time _, netX_th_fvalb, netX_th_fvaub = fva(netX, TESTS_LINSOLVER; verbose, bash_len = 10, th = true)
         
         # --------------------
-        # COBREXA (LOADED DATA: see fva_COBREXA_test_data script) 
+        # COBREXA (COBREXA_test_data script)
         
         # FVA
         println("\n", "COBREXA: ", "flux_variability_analysis")

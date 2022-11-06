@@ -12,7 +12,7 @@ let
     opm = fba(netX, TESTS_LINSOLVER)
     sol0 = solution(opm)
     
-    
+    # COBREXA (COBREXA_test_data script)
     fva_bounds_file = joinpath(TEST_DATDIR, string(model_id, "--fba-sol.tsv"))
     sol1 = _read_tsv(Float64, fva_bounds_file) |> first
 

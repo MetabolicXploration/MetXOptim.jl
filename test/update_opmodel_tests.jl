@@ -31,16 +31,10 @@ let
         
 
         # COBREXA
-        netCB = convert(COBREXA.CoreModel, netX)
-
-        netCB_biomv = Float64[]
-        for lb_ in lbs
-            COBREXA.change_bound!(netCB, glc_id; lower = lb_)
-            sol = COBREXA.flux_balance_analysis_dict(netCB, TESTS_LINSOLVER)
-            push!(netCB_biomv, sol[biom_id])
-        end
+        biom_glc_file = joinpath(TEST_DATDIR, string(model_id, "--biom-glc.tsv"))
+        netCB_biomv = _read_tsv(Float64, biom_glc_file) |> first
         
-        @test all(isapprox.(netX_biomv, netCB_biomv))
+        @test all(isapprox.(netX_biomv, netCB_biomv; atol = 1e-8))
         
         # Plots
         if isnothing(p)
