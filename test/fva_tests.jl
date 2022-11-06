@@ -28,30 +28,18 @@ let
         @time _, netX_th_fvalb, netX_th_fvaub = fva(netX, TESTS_LINSOLVER; verbose, bash_len = 10, th = true)
         
         # --------------------
-        # COBREXA
-        netCB = convert(COBREXA.CoreModel, netX)
+        # COBREXA (LOADED DATA: see fva_COBREXA_test_data script) 
         
         # FVA
         println("\n", "COBREXA: ", "flux_variability_analysis")
-        @time CBsol = COBREXA.flux_variability_analysis(
-            netCB, TESTS_LINSOLVER;
-            modifications = [COBREXA.silence],
-            bounds = COBREXA.objective_bounds(0.0)
-        )
         
-        netCB_fvalb, netCB_fvaub = eachcol(CBsol)
+        fva_bounds_file = joinpath(TEST_DATDIR, string(model_id, "--fva-bounds.tsv"))
+        netCB_fvalb, netCB_fvaub = _read_tsv(Float64, fva_bounds_file)
             
         println("\n", "BIOMASS: ")
         @show netX_fvalb[biom_idx], netX_fvaub[biom_idx]
         @show netX_th_fvalb[biom_idx], netX_th_fvaub[biom_idx]
         @show netCB_fvalb[biom_idx], netCB_fvaub[biom_idx]
-
-        # COBREXA might return nothing (ignoring those)
-        toignore = isnothing.(netCB_fvalb) .|| isnothing.(netCB_fvaub)
-        @show length(toignore)
-        for vec in [netX_fvalb, netX_fvaub, netX_th_fvalb, netX_th_fvaub, netCB_fvalb, netCB_fvaub]
-            vec[toignore] .= 0
-        end
     
         @test all(isapprox(netX_fvalb , netX_th_fvalb; atol = 1e-5))
         @test all(isapprox(netX_fvaub , netX_th_fvaub; atol = 1e-5))
