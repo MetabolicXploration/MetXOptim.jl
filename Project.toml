@@ -1,6 +1,6 @@
 name = "MetXOptim"
 uuid = "672bf490-d3aa-44fe-a664-43445036b9de"
-authors = ["josePereiro <jose.pereiro.personal@gmail.com> and contributors"]
+authors = ["The members of MetabolicXploration"]
 version = "0.1.2"
 
 [deps]

@@ -12,7 +12,7 @@ let
     biom_id = get_extra(net, "BIOM")
     biom_idx = rxnindex(net, biom_id)
 
-    opm = FBAFluxOpModel(net, Tulip.Optimizer)
+    opm = FBAFluxOpModel(net, TESTS_LINSOLVER)
     @time depv = linobj_dependence(opm)
 
     @assert depv[biom_idx] == 1

@@ -23,5 +23,6 @@ const TEST_DATDIR = joinpath(pkgdir(MetXOptim), "test", "data")
     include("linobj_dep_tests.jl")    
     include("fva_tests.jl")
     include("box_tests.jl")
+    include("echelonize_tests.jl")
     
 end
