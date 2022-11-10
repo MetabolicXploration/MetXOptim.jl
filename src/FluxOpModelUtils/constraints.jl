@@ -10,8 +10,9 @@ function set_balance_cons!(fm::FluxOpModel, S::AbstractMatrix, b::AbstractVector
     jpm = jump(fm)
     haskey(jpm, _BALANCE_CON_KEY) && delete!(jpm, _BALANCE_CON_KEY)
     v = get_jpvars(jpm)
+    c0 = zero(eltype(b))
     jpm[_BALANCE_CON_KEY] = @JuMP.constraint(jpm, 
-        S * v .- b .== zero(eltype(b)),
+        S * v .- b .== c0,
         base_name = string(_BALANCE_CON_KEY)
     )
     return fm

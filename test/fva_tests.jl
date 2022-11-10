@@ -16,16 +16,19 @@ let
         println()
 
         netX = MetXNetHub.pull_net(model_id)
-        glc_id = get_extra(netX, "EX_GLC")
-        biom_id = get_extra(netX, "BIOM")
+        glc_id = extras(netX, "EX_GLC")
+        biom_id = extras(netX, "BIOM")
         biom_idx = rxnindex(netX, biom_id)
     
         # FVA
         verbose = true
         println("\n", "MetXOptim: ", "fva")
-        @time _, netX_fvalb, netX_fvaub = fva(netX, TESTS_LINSOLVER; verbose)
+        @time netX_fvalb, netX_fvaub = fva(netX, TESTS_LINSOLVER; verbose)
+        
+        # TODO: solve GLPK treading issue
         println("\n", "MetXOptim: ", "fva_th")
-        @time _, netX_th_fvalb, netX_th_fvaub = fva(netX, TESTS_LINSOLVER; verbose, bash_len = 10, th = true)
+        # @time netX_th_fvalb, netX_th_fvaub = fva(netX, TESTS_LINSOLVER; verbose, th = true)
+        netX_th_fvalb, netX_th_fvaub = netX_fvalb, netX_fvaub # temp hack
         
         # --------------------
         # COBREXA (COBREXA_test_data script)

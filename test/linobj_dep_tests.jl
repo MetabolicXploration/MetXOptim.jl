@@ -7,9 +7,9 @@ let
     println()
 
     net = MetXNetHub.pull_net("ECC2")
-    glc_ex = get_extra(net, "EX_GLC")
+    glc_ex = extras(net, "EX_GLC")
     glc_idx = rxnindex(net, glc_ex)
-    biom_id = get_extra(net, "BIOM")
+    biom_id = extras(net, "BIOM")
     biom_idx = rxnindex(net, biom_id)
 
     opm = FBAFluxOpModel(net, TESTS_LINSOLVER)

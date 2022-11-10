@@ -1,15 +1,18 @@
 # -------------------------------------------------------------------
 # extras interface
-import MetXBase.get_extra
-get_extra(m::FluxOpModel) = m.extras
+import MetXBase.extras
+extras(m::FluxOpModel)::Dict = m.extras
+
+# -------------------------------------------------------------------
+# config interface
+@extras_dictlike_getsets FluxOpModel config
 
 # -------------------------------------------------------------------
 # net interface
 # NOTE: Do not interface with the net the data that will be in the constraints
 
 # net data
-metnet(opm::FluxOpModel)::Union{Nothing, MetNet} = get_extra(opm, :_net, nothing)
-metnet!(opm::FluxOpModel, net::MetNet) = set_extra!(opm, :_net, net) 
+@extras_val_getsets FluxOpModel metnet MetNet
 
 import MetXBase.metabolites
 metabolites(m::FluxOpModel, ider...) = metabolites(metnet(m), ider...)

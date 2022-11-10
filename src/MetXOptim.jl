@@ -24,15 +24,16 @@ module MetXOptim
     include("AbstractOpModelUtils/jump_interface.jl")
     include("AbstractOpModelUtils/jump_utils.jl")
 
-    #! include FluxObModelUtils
-    include("FluxObModelUtils/base.jl")
-    include("FluxObModelUtils/boxing.jl")
-    include("FluxObModelUtils/constraints.jl")
-    include("FluxObModelUtils/fba.jl")
-    include("FluxObModelUtils/fva.jl")
-    include("FluxObModelUtils/interfaces.jl")
-    include("FluxObModelUtils/linobj_dep.jl")
-    include("FluxObModelUtils/objectives.jl")
+    #! include FluxOpModelUtils
+    include("FluxOpModelUtils/base.jl")
+    include("FluxOpModelUtils/boxing.jl")
+    include("FluxOpModelUtils/constraints.jl")
+    include("FluxOpModelUtils/fba.jl")
+    include("FluxOpModelUtils/fva.jl")
+    include("FluxOpModelUtils/interfaces.jl")
+    include("FluxOpModelUtils/keepobj.jl")
+    include("FluxOpModelUtils/linobj_dep.jl")
+    include("FluxOpModelUtils/objectives.jl")
 
     #! include FBA
 

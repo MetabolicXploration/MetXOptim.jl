@@ -4,11 +4,6 @@
 struct FluxOpModel <: AbstractOpModel
 
     jump::JuMP.Model
-
-    # # meta
-    # mets::Union{Nothing, Array{String,1}}                          # metabolites short-name M elements 
-    # rxns::Union{Nothing, Array{String,1}}                          # reactions short-name N elements
-    # genes::Union{Nothing, Array{String,1}}                         # reactions short-name N elements
     
     # extras
     extras::Dict{Any, Any}

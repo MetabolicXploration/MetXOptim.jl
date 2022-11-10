@@ -26,8 +26,8 @@ let
         
         # MetX
         netX = MetXNetHub.pull_net(model_id)
-        glc_id = get_extra(netX, "EX_GLC")
-        biom_id = get_extra(netX, "BIOM")
+        glc_id = extras(netX, "EX_GLC")
+        biom_id = extras(netX, "BIOM")
 
         # COBREXA
         netCB = convert(COBREXA.CoreModel, netX)
@@ -105,8 +105,8 @@ let
         println()
 
         netX = MetXNetHub.pull_net(model_id)
-        glc_id = get_extra(netX, "EX_GLC")
-        biom_id = get_extra(netX, "BIOM")
+        glc_id = extras(netX, "EX_GLC")
+        biom_id = extras(netX, "BIOM")
         biom_idx = rxnindex(netX, biom_id)
     
         # --------------------
