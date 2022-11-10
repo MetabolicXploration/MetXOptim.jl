@@ -11,8 +11,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 env:
-  matrix:
-    - JULIA_NUM_THREADS=4
+  JULIA_NUM_THREADS=4
 jobs:
   test:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
@@ -21,7 +20,6 @@ jobs:
       fail-fast: false
       matrix:
         version:
-#           - '1.6'
           - '1.8'
           - 'nightly'
         os:
