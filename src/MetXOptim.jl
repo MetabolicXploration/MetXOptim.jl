@@ -10,6 +10,7 @@ module MetXOptim
     using SparseArrays
     
     import GLPK, Clp, Ipopt, Tulip
+    import MetXBase: _setindex!, chunkedChannel, run_callbacks
 
     #! include .
     

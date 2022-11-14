@@ -23,7 +23,7 @@ fva!(opm::FluxOpModel, ridx::Int; T = Float64) = keepobj!(() -> _fva!(opm, ridx;
 
 function _fva!(opm::FluxOpModel; 
         ridxs = eachindex(reactions(opm)), 
-        oniter::Function = (opm) -> nothing,
+        oniter = nothing,
     )
     # TODO: make FVA only over the independent fluxes (FullRankNet)
     
@@ -40,7 +40,7 @@ function _fva!(opm::FluxOpModel;
     keepobj!(opm) do
         for (bi, ri) in enumerate(ridxs)
             fvalb[bi], fvaub[bi] = _fva!(opm, ri; T)
-            oniter(opm)
+            run_callbacks(oniter, opm)
         end
     end
 
@@ -50,19 +50,19 @@ end
 
 function fva!(opm::FluxOpModel; 
         ridxs = eachindex(reactions(opm)), 
-        oniter::Function = (opm) -> nothing,
+        oniter = nothing,
         verbose = true
     )   
 
     # config
     verbose = config(opm, :verbose, verbose)
     
-    verbose  && (prog = Progress(length(ridxs); desc = "Doing FVA (-t1)  "))
-    _oniter = (opm) -> begin
+    verbose && (prog = Progress(length(ridxs); desc = "Doing FVA (-t1)  "))
+    _upprog = (opm) -> begin
         verbose && next!(prog)
-        oniter(opm)
+        return nothing
     end
-    ret = _fva!(opm; ridxs, oniter = _oniter)
+    ret = _fva!(opm; ridxs, oniter = [_upprog, oniter])
     verbose && (finish!(prog); flush(stdout); flush(stderr))
     return ret
 end
@@ -72,7 +72,7 @@ export fva_th
 function fva_th(net::MetNet, jump_args...;
         ridxs = eachindex(reactions(net)),
         verbose = false,
-        oniter::Function = (opm) -> nothing,
+        oniter = nothing,
         opmodel_kwargs...
     )
 
@@ -85,7 +85,6 @@ function fva_th(net::MetNet, jump_args...;
     ]
     
     nths = nthreads()
-    # @show nths
     ridxs = rxnindex(net, ridxs)
 
     # bounds
@@ -95,22 +94,18 @@ function fva_th(net::MetNet, jump_args...;
     # verbose
     bal = zeros(Int, nths)
     verbose && (prog = Progress(length(ridxs); desc = "Doing FVA (-t$nths)  "))
-    _oniter = (opm) -> begin
-        verbose && next!(prog; showvalues = [(:balance, bal), (:th, threadid())])
-        sleep(1e-2)
-        oniter(opm)
+    _upprog = (opm) -> begin
+        verbose && next!(prog; showvalues = [(:th, threadid()), (:load, bal)])
+        return nothing
     end
     
-    ch = MetXBase.chunkedChannel(ridxs; 
+    ch = chunkedChannel(ridxs; 
         nchnks = 2*nths
-        # chnklen = bash_len
     )
 
     @threads for _ in 1:2*nths
         th = threadid()
-        # @show th
         for chk in ch
-            # @show length(chk)
             
             bal[th] += 1
 
@@ -118,10 +113,10 @@ function fva_th(net::MetNet, jump_args...;
             _ridxs = collect(chk)
             _lbs, _ubs = _fva!(opm; 
                 ridxs = _ridxs,
-                oniter = _oniter
+                oniter = [_upprog, oniter]
             )
-            MetXBase._setindex!(fvalb, _ridxs, _lbs)
-            MetXBase._setindex!(fvaub, _ridxs, _ubs)
+            _setindex!(fvalb, _ridxs, _lbs)
+            _setindex!(fvaub, _ridxs, _ubs)
         end
     end
     verbose && (finish!(prog); flush(stdout); flush(stderr))
@@ -135,12 +130,13 @@ function fva(net::MetNet, jump_args...;
         th = false,
         ridxs = eachindex(reactions(net)), 
         verbose = false,
+        oniter = nothing,
         opmodel_kwargs...
     )
     if th
-        return fva_th(net, jump_args...; ridxs, verbose, opmodel_kwargs...)
+        return fva_th(net, jump_args...; ridxs, verbose, oniter, opmodel_kwargs...)
     else
         opm = FBAFluxOpModel(net, jump_args...; opmodel_kwargs...)
-        return fva!(opm; ridxs, verbose)
+        return fva!(opm; ridxs, verbose, oniter)
     end
 end

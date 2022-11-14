@@ -31,7 +31,6 @@ function _fit_dim_gd!(
     prog = nothing
 
 
-    # @show obj_val0
     up_fun = (gdmodel) -> begin
         b = MetXBase.gd_value(gdmodel)
         target_upfun!(opm, b)
@@ -56,7 +55,6 @@ function _fit_dim_gd!(
         
         # check expanding
         if iter >= prog_init
-            # @show prog
             if isnan(prog) || abs(1.0 - prog) < prog_th # stop if no progress
                 (iter == prog_init) && (safe_sol = x0) # reject work
                 return true
@@ -162,7 +160,6 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
     # objval0
     optimize!(opm)
     objval0 = objective_value(opm)
-    # @show objval0
 
     # copy
     lb0, ub0 = bounds(opm)
@@ -180,7 +177,6 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
         # check
         optimize!(opm)
         objval1 = objective_value(opm)
-        # @show objval1
 
         if isnan(objval1)
 
@@ -205,7 +201,6 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
                 # check nan
                 optimize!(opm)
                 objval1 = objective_value(opm)
-                # @show objval1
 
                 # unbox! if failed
                 isnan(objval1) && bounds!(opm, rxi; lb = lb0[rxi], ub = ub0[rxi])
@@ -239,7 +234,6 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
                 
                 optimize!(opm)
                 objval1 = objective_value(opm)
-                # @show objval1
                 
                 isapprox(objval0, objval1; rtol = obj_prot_tol) && break
             end

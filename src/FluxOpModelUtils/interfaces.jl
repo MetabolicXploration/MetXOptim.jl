@@ -5,14 +5,14 @@ extras(m::FluxOpModel)::Dict = m.extras
 
 # -------------------------------------------------------------------
 # config interface
-@extras_dictlike_getsets FluxOpModel config
+@extras_dict_interface FluxOpModel config
 
 # -------------------------------------------------------------------
 # net interface
 # NOTE: Do not interface with the net the data that will be in the constraints
 
 # net data
-@extras_val_getsets FluxOpModel metnet MetNet
+@extras_val_interface FluxOpModel metnet MetNet
 
 import MetXBase.metabolites
 metabolites(m::FluxOpModel, ider...) = metabolites(metnet(m), ider...)
