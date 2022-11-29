@@ -302,6 +302,7 @@ function box!(net::MetNet, solver; kwargs...)
     return net
 end
 
+# TODO: new name sug: inscribe!
 function box(net::MetNet, solver; 
         reduce = true,
         eps = 0.0, protect = [],
