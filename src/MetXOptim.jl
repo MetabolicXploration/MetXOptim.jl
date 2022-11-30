@@ -36,7 +36,8 @@ module MetXOptim
     include("FluxOpModelUtils/linobj_dep.jl")
     include("FluxOpModelUtils/objectives.jl")
 
-    #! include FBA
+    #! include MetNetsUtils
+    include("MetNetsUtils/fva.jl")
 
 
 end

@@ -26,8 +26,10 @@ genes(m::FluxOpModel, ider...) = genes(metnet(m), ider...)
 # contraints data
 import MetXBase.lb
 import MetXBase.lb!
-lb(m::FluxOpModel) = JuMP.normalized_rhs.(get_lower_bound_cons(m))
-lb(m::FluxOpModel, ridx) = lb(m)[rxnindex(m, ridx)]
+lb(m::FluxOpModel) = JuMP.normalized_rhs.(get_lower_bound_cons(m))::Vector{Float64}
+_lb(m::FluxOpModel, ridx::Int) = JuMP.normalized_rhs.(get_lower_bound_cons(m)[ridx])::Float64
+_lb(m::FluxOpModel, ridx) = JuMP.normalized_rhs.(get_lower_bound_cons(m)[ridx])::Vector{Float64}
+lb(m::FluxOpModel, ridx) = _lb(m, rxnindex(m, ridx))
 function lb!(m::FluxOpModel, idxs, lb)
     upcons = get_lower_bound_cons(m)
     cidxs = rxnindex(m, idxs)
@@ -39,8 +41,10 @@ lb!(m::FluxOpModel, lb) = lb!(m, 1:_length(m), lb)
 # ub
 import MetXBase.ub
 import MetXBase.ub!
-ub(m::FluxOpModel) = JuMP.normalized_rhs.(get_upper_bound_cons(m))
-ub(m::FluxOpModel, ider) = ub(m)[rxnindex(m, ider)]
+ub(m::FluxOpModel) = JuMP.normalized_rhs.(get_upper_bound_cons(m))::Vector{Float64}
+_ub(m::FluxOpModel, idx::Int) = JuMP.normalized_rhs.(get_upper_bound_cons(m)[idx])::Float64
+_ub(m::FluxOpModel, idx) = JuMP.normalized_rhs.(get_upper_bound_cons(m)[idx])::Vector{Float64}
+ub(m::FluxOpModel, ider) = _ub(m, rxnindex(m, ider))
 function ub!(m::FluxOpModel, idxs, ub)
     upcons = get_upper_bound_cons(m)
     cidxs = rxnindex(m, idxs)
@@ -61,11 +65,11 @@ function bounds!(m::FluxOpModel, idx; lb = nothing, ub = nothing)
 end
 
 import MetXBase.balance
-balance(m::FluxOpModel) = JuMP.normalized_rhs.(get_balance_cons(m))
+balance(m::FluxOpModel) = JuMP.normalized_rhs.(get_balance_cons(m))::Vector{Float64}
 balance(m::FluxOpModel, ider) = balance(m)[metindex(m, ider)]
 
 import MetXBase.lin_objective
-lin_objective(m::FluxOpModel, args...) = lin_objective(metnet(m), args...)
+lin_objective(m::FluxOpModel, args...) = lin_objective(metnet(m), args...)::Vector{Float64}
 
 import MetXBase.lin_objective!
 # change both, the JuMP objective and the cached net lin_objective vector

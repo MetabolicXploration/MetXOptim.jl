@@ -8,10 +8,10 @@ let
     println()
 
     # globals
-    lbs = range(-10.0, -0.5; length = 10)
+    lbs = OPMODEL_UPDATE_TEST_LB_RANGE
 
     p = nothing
-    for model_id in ["ecoli_core", "ECC2", "iJR904"]
+    for model_id in OPMODEL_UPDATE_TEST_MODELS
         
         # MetX
         netX = MetXNetHub.pull_net(model_id)

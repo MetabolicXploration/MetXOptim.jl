@@ -1,11 +1,12 @@
 const _OPMODEL_VARIABLES_KEY = :op_vars
-get_jpvars(jpm::JuMP.Model) = jpm[_OPMODEL_VARIABLES_KEY]
-get_jpvars(opm::AbstractOpModel) = jump(opm, _OPMODEL_VARIABLES_KEY)
+get_jpvars(jpm::JuMP.Model) = jpm[_OPMODEL_VARIABLES_KEY]::Vector{VariableRef}
+get_jpvars(opm::AbstractOpModel) = get_jpvars(jump(opm))
 set_jpvars!(jpm::JuMP.Model, N::Integer) = 
     (jpm[_OPMODEL_VARIABLES_KEY] = @JuMP.variable(jpm, [1:N]); jpm)
 set_jpvars!(opm::AbstractOpModel, N::Integer) = set_jpvars!(jump(opm), N)
 
 # TODO: Fix dispatch issue (try `const solution = _solution` and see)
+# TODO: Im fixing the eltype to Float64, generalize it
 _solution(opm::AbstractOpModel) = JuMP.value.(get_jpvars(opm))
 _solution(opm::AbstractOpModel, idx::Int) = JuMP.value(get_jpvars(opm)[idx])
 _solution(opm::AbstractOpModel, idxs) = JuMP.value.(get_jpvars(opm)[idxs])
@@ -46,7 +47,7 @@ function delete!(opm::AbstractOpModel, sym::Symbol)
     return opm
 end
 
-# TODO: test this
+# TODO: finish/test this
 import JuMP.set_start_value
 export set_start_value
 function set_start_value(opm::AbstractOpModel, vals)

@@ -7,7 +7,8 @@ let
     println("."^60)
     println()
 
-    for model_id in ["toy_net", "ecoli_core", "ECC2"]
+    
+    for model_id in FVA_TEST_MODELS
 
         println()
         println("."^60)

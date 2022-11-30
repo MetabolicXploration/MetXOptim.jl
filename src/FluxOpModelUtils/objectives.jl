@@ -6,7 +6,6 @@ function set_linear_obj!(opm::FluxOpModel, idx, c)
     return opm
 end
 
-
 # It MAXIMIZE c'*v
 function set_linear_obj!(opm::FluxOpModel, c::AbstractVector)
     v = get_jpvars(opm)

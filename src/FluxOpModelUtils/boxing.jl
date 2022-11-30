@@ -258,8 +258,8 @@ end
 
 
 export box, box!
-function box!(opm::FluxOpModel;
-        ridxs = eachindex(reactions(opm)), 
+function box!(opm::FluxOpModel,
+        ridxs = eachindex(reactions(opm));
         verbose = false,
         protect_obj = false,
         obj_prot_tol = 1e-3,
@@ -274,7 +274,7 @@ function box!(opm::FluxOpModel;
 
     # fva
     ridxs = rxnindex(opm, ridxs)
-    lb1, ub1 = fva!(opm; ridxs, verbose)
+    lb1, ub1 = fva!(opm, ridxs; verbose)
     lb1 .= round.(lb1; digits = round_digs)
     ub1 .= round.(ub1; digits = round_digs)
 
