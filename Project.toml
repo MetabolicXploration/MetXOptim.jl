@@ -1,7 +1,7 @@
 name = "MetXOptim"
 uuid = "672bf490-d3aa-44fe-a664-43445036b9de"
 authors = ["The members of MetabolicXploration"]
-version = "0.1.7"
+version = "0.1.8"
 
 [deps]
 GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
