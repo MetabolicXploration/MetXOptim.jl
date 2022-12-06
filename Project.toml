@@ -4,22 +4,23 @@ authors = ["The members of MetabolicXploration"]
 version = "0.1.5"
 
 [deps]
-GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
-SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+CPLEX = "a076750e-1247-5638-91d2-ce28b192dca0"
 Clp = "e2554f3b-3117-50c0-817c-e040a3ddf72d"
+GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
 Ipopt = "b6b21f68-93f8-5de0-b562-5493be1d77c9"
-Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
-MetXNetHub = "be9415a8-24b2-49ae-ba75-41eeaa9f722f"
-ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
 MetXBase = "0b8c4419-604a-4c8e-9eed-0f79de4a140e"
+MetXNetHub = "be9415a8-24b2-49ae-ba75-41eeaa9f722f"
+ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
 
 [compat]
 julia = "1.6"
 
 [extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test", "Random"]
