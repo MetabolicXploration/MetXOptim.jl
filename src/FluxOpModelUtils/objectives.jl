@@ -1,3 +1,4 @@
+## ------------------------------------------------------------------------------
 # It MAXIMIZE c' * v[idx]
 export set_linear_obj!
 function set_linear_obj!(opm::FluxOpModel, idx, c)
@@ -14,5 +15,12 @@ function set_linear_obj!(opm::FluxOpModel, c::AbstractVector)
 end
 
 set_linear_obj!(opm::FluxOpModel, net::MetNet) = 
-    set_linear_obj!(opm::FluxOpModel, lin_objective(net))
+    set_linear_obj!(opm, lin_objective(net))
 
+## ------------------------------------------------------------------------------
+export set_v2_obj!
+function set_v2_obj!(opm::FluxOpModel, sense = MOI.MIN_SENSE)
+    v = get_jpvars(opm)
+    JuMP.@objective(jump(opm), sense, v' * v)
+    return opm
+end

@@ -38,9 +38,11 @@ module MetXOptim
     include("FluxOpModelUtils/keepobj.jl")
     include("FluxOpModelUtils/linobj_dep.jl")
     include("FluxOpModelUtils/objectives.jl")
+    include("FluxOpModelUtils/r2_fba.jl")
 
     #! include MetNetsUtils
     include("MetNetsUtils/fva.jl")
+    include("MetNetsUtils/vertexes.jl")
 
 
 end

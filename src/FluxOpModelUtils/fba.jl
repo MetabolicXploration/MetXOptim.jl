@@ -47,7 +47,11 @@ end
 ## ------------------------------------------------------------------
 # fba
 export fba, fba!
-fba!(opm::FluxOpModel) = (optimize!(opm); opm)
+function fba!(opm::FluxOpModel) 
+    set_linear_obj!(opm, balance(opm))
+    optimize!(opm) 
+    return opm
+end
 
 ## ------------------------------------------------------------------
 # AbstractMetNet
