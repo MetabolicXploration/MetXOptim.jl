@@ -256,7 +256,6 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
     
 end
 
-
 export box, box!
 function box!(opm::FluxOpModel,
         ridxs = eachindex(reactions(opm));
@@ -317,8 +316,10 @@ function box(net::MetNet, solver;
             ub = copy(ub(net)),
         )
     end
+    
     box!(net, solver; box_kwargs...) 
-
+    
+    
     if reduce
         empty_fixxed!(net; eps, protect)
         net = emptyless_model(net)

@@ -24,7 +24,7 @@ end
 
 ## ------------------------------------------------------------------
 function FBAFluxOpModel(
-        net::MetNet, jump_args...; 
+        net::MetNet, solver; 
         netfields = [:rxns, :c], # fields to chache
         netcopy = false # flag to make an internal copy of the net fields
     )
@@ -32,7 +32,7 @@ function FBAFluxOpModel(
     opm = FBAFluxOpModel(
         net.S, net.b, 
         net.lb, net.ub, net.c, 
-        jump_args...
+        solver
     )
 
     # cache net
@@ -48,7 +48,10 @@ end
 # fba
 export fba, fba!
 function fba!(opm::FluxOpModel) 
-    set_linear_obj!(opm, balance(opm))
+    
+    # TODO: see why this breaks box!
+    # set_linear_obj!(opm, lin_objective(opm))
+
     optimize!(opm) 
     return opm
 end

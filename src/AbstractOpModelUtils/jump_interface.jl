@@ -1,5 +1,4 @@
 # Jump methods and utils to be applicable directly over AbtractOpModels
-# TODO: do more methods
 
 # Common methods to work with jump models
 export jump

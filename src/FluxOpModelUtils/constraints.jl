@@ -22,18 +22,17 @@ get_balance_cons(fm::FluxOpModel) = jump(fm, _BALANCE_CON_KEY)
 
 function set_obj_balance_cons!(fm::FluxOpModel, c::AbstractVector, val)
     jpm = jump(fm)
-    haskey(jpm, _OBJ_BALANCE_CON_KEY) && delete!(jpm, _OBJ_BALANCE_CON_KEY)
+    _delete!(jpm, _OBJ_BALANCE_CON_KEY)
     v = get_jpvars(jpm)
     jpm[_OBJ_BALANCE_CON_KEY] = @JuMP.constraint(jpm, 
-        c' * v .== val,
+        c' * v == val,
         base_name = string(_OBJ_BALANCE_CON_KEY)
     )
     return fm
 end
-set_obj_balance_cons!(fm::FluxOpModel, val) = set_obj_balance_cons!(fm, balance(fm), val)
+set_obj_balance_cons!(fm::FluxOpModel, val) = set_obj_balance_cons!(fm, lin_objective(fm), val)
 get_obj_balance_cons(fm::FluxOpModel) = jump(fm, _OBJ_BALANCE_CON_KEY)
-del_obj_balance_cons!(fm::FluxOpModel) = 
-    haskey(jump(fm), _OBJ_BALANCE_CON_KEY) && delete!(jump(fm), _OBJ_BALANCE_CON_KEY)
+del_obj_balance_cons!(fm::FluxOpModel) = _delete!(jump(fm), _OBJ_BALANCE_CON_KEY)
 
 ## ------------------------------------------------------------------------------
 # bounds constraints

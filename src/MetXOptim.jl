@@ -1,7 +1,4 @@
 # TODO: see threads issue (no all cpu is used)
-# TODO: introduce callbacks
-
-# TODO: install Gurobi at Torino (grbgetkey ab5b0f24-732c-11ed-ac66-0242ac120004)
 
 module MetXOptim
 
@@ -23,6 +20,7 @@ module MetXOptim
     
     #! include Utils
     include("Utils/const.jl")
+    include("Utils/jump_utils.jl")
 
     #! include AbstractOpModelUtils
     include("AbstractOpModelUtils/jump_interface.jl")
