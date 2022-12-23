@@ -175,8 +175,11 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
         bounds!(opm, rbatch; lb = box_lb[rbatch], ub = box_ub[rbatch])
         
         # check
-        optimize!(opm)
-        objval1 = objective_value(opm)
+        try; optimize!(opm)
+            objval1 = objective_value(opm)
+        catch
+            objval1 = NaN
+        end
 
         if isnan(objval1)
 
@@ -199,8 +202,11 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
                 bounds!(opm, rxi; lb = box_lb[rxi], ub = box_ub[rxi])
                 
                 # check nan
-                optimize!(opm)
-                objval1 = objective_value(opm)
+                try; optimize!(opm)
+                    objval1 = objective_value(opm)
+                catch
+                    objval1 = NaN
+                end
 
                 # unbox! if failed
                 isnan(objval1) && bounds!(opm, rxi; lb = lb0[rxi], ub = ub0[rxi])
@@ -227,8 +233,8 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
                 
                 (dep == 0) && continue
                 
-                fitfun = dep == 1 ? fit_ub! : fit_lb!
-                fitfun(opm, rxi, objval0; 
+                fitfun! = dep == 1 ? fit_ub! : fit_lb!
+                fitfun!(opm, rxi, objval0; 
                     verbose = false, max_box = (lb0[rxi], ub0[rxi])
                 )
                 
@@ -250,7 +256,6 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
 
     end # for rbatch in rbatchs
     verbose && (finish!(prog); flush(stdout); flush(stderr))
-    
     
     return opm
     

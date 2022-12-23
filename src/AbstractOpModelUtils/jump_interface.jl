@@ -5,6 +5,7 @@ export jump
 jump(jpm::JuMP.Model) = jpm
 jump(opm::AbstractOpModel) = error("Method jump(opm::$(typeof(opm))) not defined!")
 jump(jpm::JuMP.Model, k) = jpm[k]
+jump(jpm::JuMP.Model, k, dfl) = haskey(jpm, k) ? jpm[k] : dfl
 jump(opm::AbstractOpModel, k) = error("Method jump(opm::$(typeof(opm)), k) not defined!")
 
 import JuMP.set_optimizer
@@ -32,4 +33,9 @@ haskey(opm::AbstractOpModel, key) = JuMP.haskey(jump(opm), key)
 
 import JuMP.optimize!
 export optimize!
-optimize!(opm::AbstractOpModel; kwargs...) = JuMP.optimize!(jump(opm); kwargs...)
+function optimize!(opm::AbstractOpModel; kwargs...) 
+    jpm = jump(opm)
+    JuMP.optimize!(jpm; kwargs...)
+    _solution!(jpm) # save solution
+    return opm
+end

@@ -6,10 +6,13 @@ function FBAFluxOpModel(
         lb::AbstractVector, ub::AbstractVector, 
         c::AbstractVector, 
         jump_args...
-    )
+    )::FluxOpModel
 
-    opm = FluxOpModel(JuMP.Model(jump_args...))
-    JuMP.set_silent(opm)
+    # TODO: Add some checks (dims, types, etc)
+
+    jpm = JuMP.Model(jump_args...)
+    opm = FluxOpModel(jpm)
+    JuMP.set_silent(jpm)
 
     set_jpvars!(opm, size(S, 2))
     
@@ -48,15 +51,18 @@ end
 # fba
 export fba, fba!
 function fba!(opm::FluxOpModel) 
+    # We can not assume that the current obj is the linear
+    set_linear_obj!(opm)
     
-    # TODO: see why this breaks box!
-    # set_linear_obj!(opm, lin_objective(opm))
-
-    optimize!(opm) 
+    optimize!(opm)
     return opm
 end
 
 ## ------------------------------------------------------------------
 # AbstractMetNet
-fba(net::AbstractMetNet, jump_args...; opmodel_kwargs...) = 
-    fba!(FBAFluxOpModel(metnet(net), jump_args...; opmodel_kwargs...))
+function fba(net::AbstractMetNet, jump_args...; opmodel_kwargs...)
+    net = metnet(net)
+    opm = FBAFluxOpModel(net, jump_args...; opmodel_kwargs...)
+    optimize!(opm)
+    return opm
+end

@@ -17,6 +17,7 @@ module MetXOptim
     #! include Types
     include("Types/AbstractOpModel.jl")
     include("Types/FluxOpModel.jl")
+    include("Types/ObjFunBox.jl")
     
     #! include Utils
     include("Utils/const.jl")

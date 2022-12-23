@@ -7,9 +7,15 @@ set_jpvars!(opm::AbstractOpModel, N::Integer) = set_jpvars!(jump(opm), N)
 
 # TODO: Fix dispatch issue (try `const solution = _solution` and see)
 # TODO: Im fixing the eltype to Float64, generalize it
-_solution(opm::AbstractOpModel) = JuMP.value.(get_jpvars(opm))
-_solution(opm::AbstractOpModel, idx::Int) = JuMP.value(get_jpvars(opm)[idx])
-_solution(opm::AbstractOpModel, idxs) = JuMP.value.(get_jpvars(opm)[idxs])
+_solution(opm::AbstractOpModel) = jump(opm, _OPM_SOLUTION_KEY)::Vector{Float64}
+_solution(opm::AbstractOpModel, idxs) = getindex(jump(opm, _OPM_SOLUTION_KEY)::Vector{Float64}, idxs)
+
+const _OPM_SOLUTION_KEY = :_OPM_SOLUTION_KEY
+function _solution!(jpm::JuMP.Model) 
+    sol = JuMP.value.(get_jpvars(jpm))
+    jpm[_OPM_SOLUTION_KEY] = sol
+    return sol
+end
 
 import Base.length
 length(opm::AbstractOpModel) = length(get_jpvars(opm))

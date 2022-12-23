@@ -4,13 +4,13 @@ function rxn_extrema!(opm::FluxOpModel, ri::Int)
     
     # max
     set_linear_obj!(opm, ri, 1.0)
-    sol = fba!(opm)
-    ub = solution(sol, ri)
+    optimize!(opm)
+    ub = solution(opm, ri)
     
     # max
     set_linear_obj!(opm, ri, -1.0)
-    sol = fba!(opm)
-    lb = solution(sol, ri)
+    optimize!(opm)
+    lb = solution(opm, ri)
 
     return lb, ub
 end
@@ -22,7 +22,6 @@ rxn_extrema(opm::FluxOpModel, ridx::Int; T = Float64) = keepobj!(() -> rxn_extre
 function _fva!(opm::FluxOpModel, ridxs; 
         oniter = nothing,
     )
-    # DONE: make FVA only over the independent fluxes (FullRankNet)
 
     # ridxs
     ridxs = rxnindex(opm, ridxs)
