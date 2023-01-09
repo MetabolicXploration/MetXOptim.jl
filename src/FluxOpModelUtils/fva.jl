@@ -16,7 +16,7 @@ function rxn_extrema!(opm::FluxOpModel, ri::Int)
 end
 
 export rxn_extrema
-rxn_extrema(opm::FluxOpModel, ridx::Int; T = Float64) = keepobj!(() -> rxn_extrema!(opm, ridx; T), opm)
+rxn_extrema(opm::FluxOpModel, ridx::Int; T = Float64) = keepobj(() -> rxn_extrema!(opm, ridx; T), opm)
 
 # ------------------------------------------------------------------
 function _fva!(opm::FluxOpModel, ridxs; 
@@ -64,6 +64,6 @@ function fva!(opm::FluxOpModel, ridxs;
 end
 
 export fva
-fva(opm::FluxOpModel, args...; kwargs...) = keepobj!(() -> fva!(opm, args...; kwargs...), opm)
+fva(opm::FluxOpModel, args...; kwargs...) = keepobj(() -> fva!(opm, args...; kwargs...), opm)
 
 

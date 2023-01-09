@@ -13,7 +13,7 @@ let
     biom_idx = rxnindex(net, biom_id)
 
     opm = FBAFluxOpModel(net, TESTS_LINSOLVER)
-    @time depv = linobj_dependence(opm)
+    @time depv = objective_dependence(opm)
 
     @assert depv[biom_idx] == 1
     @assert depv[glc_idx] == -1

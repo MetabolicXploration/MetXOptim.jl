@@ -6,7 +6,8 @@
 # end
 
 ## ------------------------------------------------------------------
-function _fit_dim_gd!(
+# Make a gradient descent moving a bound till an objective is match
+function _bound_grad_desc!(
         opm::FluxOpModel;
         target_flx::Int,
         target_upfun!::Function,
@@ -89,8 +90,8 @@ _fit_dim_gd_objfun!(opm) = (optimize!(opm); objective_value(opm))
 _fit_lb_target_upfun!(target_flx) = (opm, b) -> lb!(opm, target_flx, b)
 _fit_ub_target_upfun!(target_flx) = (opm, b) -> ub!(opm, target_flx, b)
 
-export fit_lb!
-function fit_lb!(
+export lb_grad_desc!
+function lb_grad_desc!(
         opm::FluxOpModel, ider, obj_target;
         x0 = lb(opm, ider),                     # The initial point
         x1 = lb(opm, ider) - 1e-3,              # The next initial point
@@ -104,7 +105,7 @@ function fit_lb!(
 
     target_flx = rxnindex(opm, ider)
 
-    _fit_dim_gd!(
+    _bound_grad_desc!(
         opm; 
         target_flx, 
         objfun_target = obj_target, 
@@ -119,8 +120,8 @@ function fit_lb!(
     return opm
 end
 
-export fit_ub!
-function fit_ub!(
+export ub_grad_desc!
+function ub_grad_desc!(
         opm::FluxOpModel, ider, obj_target;
         x0 = ub(opm, ider),                     # The initial point
         x1 = ub(opm, ider) + 1e-3,              # The next initial point
@@ -134,7 +135,7 @@ function fit_ub!(
 
     target_flx = rxnindex(opm, ider)
 
-    _fit_dim_gd!(
+    _bound_grad_desc!(
         opm; 
         target_flx, 
         objfun_target = obj_target, 
@@ -150,6 +151,13 @@ function fit_ub!(
 end
 
 ## ------------------------------------------------------------------
+function _try_opt_objective!(opm)
+    try; optimize!(opm)
+        return objective_value(opm)
+        catch; return NaN
+    end
+end
+
 # add box bounds but checking an objective (the current at opm) is protected
 function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub; 
         batch_len = min(length(opm), 10),
@@ -167,7 +175,9 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
     rbatchs = MetXBase.chunks(ridxs; chnklen = batch_len)
     verbose && (prog = ProgressUnknown(; desc = "Fixing objective"))
     
-    depv = linobj_dependence(opm)
+    depv = objective_dependence(opm)
+    objval1 = NaN
+
     for rbatch in rbatchs
         rbatch = collect(rbatch)
 
@@ -175,12 +185,7 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
         bounds!(opm, rbatch; lb = box_lb[rbatch], ub = box_ub[rbatch])
         
         # check
-        try; optimize!(opm)
-            objval1 = objective_value(opm)
-        catch
-            objval1 = NaN
-        end
-
+        objval1 = _try_opt_objective!(opm)
         if isnan(objval1)
 
             # restore
@@ -202,11 +207,7 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
                 bounds!(opm, rxi; lb = box_lb[rxi], ub = box_ub[rxi])
                 
                 # check nan
-                try; optimize!(opm)
-                    objval1 = objective_value(opm)
-                catch
-                    objval1 = NaN
-                end
+                objval1 = _try_opt_objective!(opm)
 
                 # unbox! if failed
                 isnan(objval1) && bounds!(opm, rxi; lb = lb0[rxi], ub = ub0[rxi])
@@ -215,8 +216,8 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
         end
 
         # grad desc
-        optimize!(opm)
-        objval1 = objective_value(opm)
+        objval1 = _try_opt_objective!(opm)
+
         if !isapprox(objval0, objval1; rtol = obj_prot_tol) 
 
             for (rxi, dep) in zip(rbatch, depv[rbatch])
@@ -233,13 +234,12 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
                 
                 (dep == 0) && continue
                 
-                fitfun! = dep == 1 ? fit_ub! : fit_lb!
+                fitfun! = dep == 1 ? ub_grad_desc! : lb_grad_desc!
                 fitfun!(opm, rxi, objval0; 
                     verbose = false, max_box = (lb0[rxi], ub0[rxi])
                 )
                 
-                optimize!(opm)
-                objval1 = objective_value(opm)
+                objval1 = _try_opt_objective!(opm)
                 
                 isapprox(objval0, objval1; rtol = obj_prot_tol) && break
             end
@@ -284,7 +284,7 @@ function box!(opm::FluxOpModel,
 
     # objval1
     if protect_obj
-        set_objective_function(opm, obj0)
+        set_objective_function!(opm, obj0)
         _safe_box!(opm, ridxs, lb1, ub1; 
             batch_len, verbose, obj_prot_tol
         )

@@ -2,13 +2,25 @@
 const _LAST_OBJECTIVE_KEY = :_LAST_OBJECTIVE_KEY
 const _CURR_OBJECTIVE_KEY = :_CURR_OBJECTIVE_KEY
 
+## ------------------------------------------------------------------------------
+import JuMP.objective_function
+export objective_function
+objective_function(opm::FluxOpModel) = jump(opm, _CURR_OBJECTIVE_KEY, nothing)
+
+import JuMP.objective_sense
+export objective_sense
+function objective_sense(opm::FluxOpModel) 
+    fbox = jump(opm, _CURR_OBJECTIVE_KEY, nothing)
+    isnothing(fbox) ? nothing : fbox.sense
+end
+
+## ------------------------------------------------------------------------------
 export set_objective_function!
 function set_objective_function!(objsetter!::Function, opm::FluxOpModel, newobjkey::Symbol)
     jpm = jump(opm)
 
     # current to last
-    jpm[_LAST_OBJECTIVE_KEY] = jump(jpm, _CURR_OBJECTIVE_KEY, nothing)
-    
+    jpm[_LAST_OBJECTIVE_KEY] = objective_function(opm)
     # set fun on model
     objsetter!(jpm)
 
@@ -26,16 +38,13 @@ function set_objective_function!(objsetter!::Function, opm::FluxOpModel, newobjk
     return opm
 end
 
-function set_objective_function!(opm::FluxOpModel, newobjkey::Symbol)
-
+function set_objective_function!(opm::FluxOpModel, fbox::ObjFunBox)
+    
     jpm = jump(opm)
-    
-    # current to last
-    jpm[_LAST_OBJECTIVE_KEY] = jump(jpm, _CURR_OBJECTIVE_KEY, nothing)
 
-    # get fun box
-    fbox = jpm[newobjkey]
-    
+    # current to last
+    jpm[_LAST_OBJECTIVE_KEY] = objective_function(opm)
+
     # add to model
     set_objective_function(jpm, fbox.fun)
     set_objective_sense(jpm, fbox.sense)
@@ -46,23 +55,44 @@ function set_objective_function!(opm::FluxOpModel, newobjkey::Symbol)
     return opm
 end
 
+function set_objective_function!(opm::FluxOpModel, newobjkey::Symbol)
+
+    jpm = jump(opm)
+    
+    # current to last
+    jpm[_LAST_OBJECTIVE_KEY] = objective_function(opm)
+    
+    set_objective_function!(opm, jpm[newobjkey])
+end
+
 set_last_obj!(opm::FluxOpModel) = set_objective_function!(opm, _CURR_OBJECTIVE_KEY)
 
+## ------------------------------------------------------------------------------
+export set_objective_sense!
+function set_objective_sense!(opm::FluxOpModel, sense)
+    currfbox = objective_function(opm)
+    isnothing(currfbox) && error("No objective set!")
+    newfbox = ObjFunBox(currfbox; sense)
+    set_objective_function!(opm, newfbox)
+    return opm
+end
+
+
+## ------------------------------------------------------------------------------
 # execute f and ensure the model objective do not change.
 # returns the value of f()
-export keepobj!
-function keepobj!(f::Function, opm::FluxOpModel)
-    obj0 = nothing
+export keepobj
+function keepobj(f::Function, opm::FluxOpModel)
+    fbox = nothing
     try
-        jpm = jump(opm)
-        obj0 = objective_function(jpm)
+        fbox = jump(opm, _CURR_OBJECTIVE_KEY, nothing)
         return f()
     finally 
-        if !isnothing(obj0) 
-            set_objective_function(jpm, obj0)
-            jpm[_CURR_OBJECTIVE_KEY] = obj0
+        if !isnothing(fbox) 
+            set_objective_function!(opm, fbox)
         end
     end
+    return nothing
 end
 
 ## ------------------------------------------------------------------------------
@@ -87,7 +117,7 @@ function set_linear_obj!(opm::FluxOpModel, c::AbstractVector)
 end
 
 set_linear_obj!(opm::FluxOpModel, net::MetNet) = 
-    set_linear_obj!(opm, lin_objective(net))
+    set_linear_obj!(opm, linear_coefficients(net))
 
 function set_linear_obj!(opm::FluxOpModel) 
     set_objective_function!(opm, _LIN_OBJECTIVE_KEY)

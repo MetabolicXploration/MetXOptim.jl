@@ -28,7 +28,7 @@ end
 ## ------------------------------------------------------------------
 function FBAFluxOpModel(
         net::MetNet, solver; 
-        netfields = [:rxns, :c], # fields to chache
+        netfields = [:rxns], # fields to chache
         netcopy = false # flag to make an internal copy of the net fields
     )
 

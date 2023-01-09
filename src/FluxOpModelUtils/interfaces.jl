@@ -70,14 +70,14 @@ balance(opm::FluxOpModel, ider) = balance(opm)[metindex(opm, ider)]
 
 # TODO: DEPRECATED use set_linear_obj!
 
-# import MetXBase.lin_objective
-# lin_objective(opm::FluxOpModel, args...) = lin_objective(metnet(opm), args...)::Vector{Float64}
+# import MetXBase.linear_coefficients
+# linear_coefficients(opm::FluxOpModel, args...) = linear_coefficients(metnet(opm), args...)::Vector{Float64}
 
-# import MetXBase.lin_objective!
-# # change both, the JuMP objective and the cached net lin_objective vector
-# function lin_objective!(opm::FluxOpModel, args...)
+# import MetXBase.linear_coefficients!
+# # change both, the JuMP objective and the cached net linear_coefficients vector
+# function linear_coefficients!(opm::FluxOpModel, args...)
 #     net = metnet(opm)
-#     lin_objective!(net, args...)
+#     linear_coefficients!(net, args...)
 #     set_linear_obj!(opm, metnet(opm))
 #     return opm
 # end
@@ -86,7 +86,7 @@ balance(opm::FluxOpModel, ider) = balance(opm)[metindex(opm, ider)]
 # jump
 export jump
 jump(opm::FluxOpModel) = opm.jump
-jump(opm::FluxOpModel, k) = opm.jump[k]
+jump(opm::FluxOpModel, arg, args...) = jump(opm.jump, arg, args...)
 
 get_jpvars(opm::FluxOpModel, ider) = get_jpvars(opm)[rxnindex(opm, ider)]
 
@@ -98,17 +98,15 @@ import JuMP.objective_value
 export objective_value
 objective_value(opm::FluxOpModel) = objective_value(jump(opm))
 
-import JuMP.objective_function
-export objective_function
-objective_function(opm::FluxOpModel) = objective_function(jump(opm))
 
-import JuMP.set_objective_function
-export set_objective_function
-set_objective_function(opm::FluxOpModel, f) = set_objective_function(jump(opm), f)
+# DEPRECATED use the objective boxing interface
+# import JuMP.set_objective_function
+# export set_objective_function
+# set_objective_function(opm::FluxOpModel, f) = set_objective_function(jump(opm), f)
 
-import JuMP.set_objective_sense
-export set_objective_sense
-set_objective_sense(opm::FluxOpModel, sense) = set_objective_sense(jump(opm), sense)
+# import JuMP.set_objective_sense
+# export set_objective_sense
+# set_objective_sense(opm::FluxOpModel, sense) = set_objective_sense(jump(opm), sense)
 
 import JuMP.set_objective
 export set_objective
