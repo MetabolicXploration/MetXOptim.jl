@@ -68,17 +68,19 @@ import MetXBase.balance
 balance(opm::FluxOpModel) = JuMP.normalized_rhs.(get_balance_cons(opm))::Vector{Float64}
 balance(opm::FluxOpModel, ider) = balance(opm)[metindex(opm, ider)]
 
-import MetXBase.lin_objective
-lin_objective(opm::FluxOpModel, args...) = lin_objective(metnet(opm), args...)::Vector{Float64}
+# TODO: DEPRECATED use set_linear_obj!
 
-import MetXBase.lin_objective!
-# change both, the JuMP objective and the cached net lin_objective vector
-function lin_objective!(opm::FluxOpModel, args...)
-    net = metnet(opm)
-    lin_objective!(net, args...)
-    set_linear_obj!(opm, metnet(opm))
-    return opm
-end
+# import MetXBase.lin_objective
+# lin_objective(opm::FluxOpModel, args...) = lin_objective(metnet(opm), args...)::Vector{Float64}
+
+# import MetXBase.lin_objective!
+# # change both, the JuMP objective and the cached net lin_objective vector
+# function lin_objective!(opm::FluxOpModel, args...)
+#     net = metnet(opm)
+#     lin_objective!(net, args...)
+#     set_linear_obj!(opm, metnet(opm))
+#     return opm
+# end
     
 # -------------------------------------------------------------------
 # jump

@@ -31,6 +31,7 @@ module MetXOptim
     include("FluxOpModelUtils/base.jl")
     include("FluxOpModelUtils/boxing.jl")
     include("FluxOpModelUtils/constraints.jl")
+    include("FluxOpModelUtils/dual_prices.jl")
     include("FluxOpModelUtils/fba.jl")
     include("FluxOpModelUtils/fva.jl")
     include("FluxOpModelUtils/interfaces.jl")
