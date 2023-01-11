@@ -99,10 +99,20 @@ end
 # It MAXIMIZE c' * v[idx]
 const _LIN_OBJECTIVE_KEY = :_LIN_OBJECTIVE_KEY
 export set_linear_obj!
-function set_linear_obj!(opm::FluxOpModel, idx, c)
+function _set_linear_obj!(opm::FluxOpModel, idx, c)
     set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm, idx)
         @JuMP.objective(jpm, MOI.MAX_SENSE, c' * v)
+    end
+    return opm
+end
+set_linear_obj!(opm::FluxOpModel, idx, c::Real) = _set_linear_obj!(opm, idx, c)
+set_linear_obj!(opm::FluxOpModel, idx, c::AbstractVector) = _set_linear_obj!(opm, idx, c)
+
+function set_linear_obj!(opm::FluxOpModel, idx, sense::MOI.OptimizationSense)
+    set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
+        v = get_jpvars(opm, idx)
+        @JuMP.objective(jpm, sense, v)
     end
     return opm
 end
@@ -119,10 +129,8 @@ end
 set_linear_obj!(opm::FluxOpModel, net::MetNet) = 
     set_linear_obj!(opm, linear_coefficients(net))
 
-function set_linear_obj!(opm::FluxOpModel) 
+set_linear_obj!(opm::FluxOpModel) =
     set_objective_function!(opm, _LIN_OBJECTIVE_KEY)
-    return opm
-end
 
 ## ------------------------------------------------------------------------------
 const _V2_OBJECTIVE_KEY = :_V2_OBJECTIVE_KEY
