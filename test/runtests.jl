@@ -5,7 +5,6 @@ using MetXOptim
 using MetXNetHub
 
 
-
 ## ------------------------------------------------------------------
 @testset "MetXOptim.jl" begin
 

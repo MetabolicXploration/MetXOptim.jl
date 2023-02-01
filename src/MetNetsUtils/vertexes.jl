@@ -1,4 +1,4 @@
-# TODO
+# TODO (IDEA)
 # Compute a subset of vertexes of the politope so, you can evaluate if any 
 # "equivalent" transformation is really equivalent (e.g. fva inboxing)
 

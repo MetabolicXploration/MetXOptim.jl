@@ -30,12 +30,3 @@ normalized_rhs(opm::AbstractOpModel, cons_key::Symbol) = JuMP.normalized_rhs.(ju
 
 import JuMP.haskey
 haskey(opm::AbstractOpModel, key) = JuMP.haskey(jump(opm), key)
-
-import JuMP.optimize!
-export optimize!
-function optimize!(opm::AbstractOpModel; kwargs...) 
-    jpm = jump(opm)
-    JuMP.optimize!(jpm; kwargs...)
-    _solution!(jpm) # save solution
-    return opm
-end

@@ -77,7 +77,6 @@ function set_objective_sense!(opm::FluxOpModel, sense)
     return opm
 end
 
-
 ## ------------------------------------------------------------------------------
 # execute f and ensure the model objective do not change.
 # returns the value of f()
@@ -129,13 +128,14 @@ end
 set_linear_obj!(opm::FluxOpModel, net::MetNet) = 
     set_linear_obj!(opm, linear_coefficients(net))
 
+# Set the last linear objective
 set_linear_obj!(opm::FluxOpModel) =
     set_objective_function!(opm, _LIN_OBJECTIVE_KEY)
 
 ## ------------------------------------------------------------------------------
 const _V2_OBJECTIVE_KEY = :_V2_OBJECTIVE_KEY
 export set_v2_obj!
-function set_v2_obj!(opm::FluxOpModel, sense)
+function set_v2_obj!(opm::FluxOpModel, sense::MOI.OptimizationSense)
     set_objective_function!(opm, _V2_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm)
         JuMP.@objective(jpm, sense, v' * v)
@@ -143,6 +143,23 @@ function set_v2_obj!(opm::FluxOpModel, sense)
     return opm
 end
 
+function set_v2_obj!(opm::FluxOpModel, idxs, sense::MOI.OptimizationSense)
+    set_objective_function!(opm, _V2_OBJECTIVE_KEY) do jpm
+        v = get_jpvars(opm, idxs)
+        JuMP.@objective(jpm, sense, v' * v)
+    end
+    return opm
+end
+
+function set_v2_obj!(opm::FluxOpModel, C::AbstractMatrix, sense::MOI.OptimizationSense)
+    set_objective_function!(opm, _V2_OBJECTIVE_KEY) do jpm
+        v = get_jpvars(opm)
+        JuMP.@objective(jpm, sense, v' * C * v)
+    end
+    return opm
+end
+
+# Set the last quadratic objective
 function set_v2_obj!(opm::FluxOpModel) 
     set_objective_function!(opm, _V2_OBJECTIVE_KEY)
     return opm

@@ -26,6 +26,7 @@ module MetXOptim
     #! include AbstractOpModelUtils
     include("AbstractOpModelUtils/jump_interface.jl")
     include("AbstractOpModelUtils/jump_utils.jl")
+    include("AbstractOpModelUtils/optimize.jl")
 
     #! include FluxOpModelUtils
     include("FluxOpModelUtils/base.jl")
@@ -35,7 +36,6 @@ module MetXOptim
     include("FluxOpModelUtils/fba.jl")
     include("FluxOpModelUtils/fva.jl")
     include("FluxOpModelUtils/interfaces.jl")
-    include("FluxOpModelUtils/keepobj.jl")
     include("FluxOpModelUtils/linobj_dep.jl")
     include("FluxOpModelUtils/objectives.jl")
     include("FluxOpModelUtils/r2_fba.jl")

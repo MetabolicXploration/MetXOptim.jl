@@ -36,7 +36,7 @@ function lb!(opm::FluxOpModel, idxs, lb)
     up_con_rhs!(upcons, lb, cidxs)
     return opm
 end
-lb!(opm::FluxOpModel, lb) = lb!(opm, 1:_length(opm), lb)
+lb!(opm::FluxOpModel, lb) = lb!(opm, 1:length(get_lower_bound_cons(opm)), lb)
 
 # ub
 import MetXBase.ub
@@ -51,7 +51,7 @@ function ub!(opm::FluxOpModel, idxs, ub)
     up_con_rhs!(upcons, ub, cidxs)
     return opm
 end
-ub!(opm::FluxOpModel, ub) = ub!(opm, 1:_length(opm), ub)
+ub!(opm::FluxOpModel, ub) = ub!(opm, 1:length(get_upper_bound_cons(opm)), ub)
 
 import MetXBase.bounds
 import MetXBase.bounds!
@@ -67,20 +67,6 @@ end
 import MetXBase.balance
 balance(opm::FluxOpModel) = JuMP.normalized_rhs.(get_balance_cons(opm))::Vector{Float64}
 balance(opm::FluxOpModel, ider) = balance(opm)[metindex(opm, ider)]
-
-# TODO: DEPRECATED use set_linear_obj!
-
-# import MetXBase.linear_coefficients
-# linear_coefficients(opm::FluxOpModel, args...) = linear_coefficients(metnet(opm), args...)::Vector{Float64}
-
-# import MetXBase.linear_coefficients!
-# # change both, the JuMP objective and the cached net linear_coefficients vector
-# function linear_coefficients!(opm::FluxOpModel, args...)
-#     net = metnet(opm)
-#     linear_coefficients!(net, args...)
-#     set_linear_obj!(opm, metnet(opm))
-#     return opm
-# end
     
 # -------------------------------------------------------------------
 # jump
@@ -98,16 +84,3 @@ import JuMP.objective_value
 export objective_value
 objective_value(opm::FluxOpModel) = objective_value(jump(opm))
 
-
-# DEPRECATED use the objective boxing interface
-# import JuMP.set_objective_function
-# export set_objective_function
-# set_objective_function(opm::FluxOpModel, f) = set_objective_function(jump(opm), f)
-
-# import JuMP.set_objective_sense
-# export set_objective_sense
-# set_objective_sense(opm::FluxOpModel, sense) = set_objective_sense(jump(opm), sense)
-
-import JuMP.set_objective
-export set_objective
-set_objective(opm::FluxOpModel, sense, func) = set_objective(jump(opm), sense, func)
