@@ -111,7 +111,7 @@ set_linear_obj!(opm::FluxOpModel, idx, c::AbstractVector) = _set_linear_obj!(opm
 function set_linear_obj!(opm::FluxOpModel, idx, sense::MOI.OptimizationSense)
     set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm, idx)
-        @JuMP.objective(jpm, sense, v)
+        @JuMP.objective(jpm, sense, sum(v))
     end
     return opm
 end

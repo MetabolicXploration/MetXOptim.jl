@@ -20,7 +20,8 @@ function set_balance_cons!(fm::FluxOpModel, S::AbstractMatrix, b::AbstractVector
 end
 get_balance_cons(fm::FluxOpModel) = jump(fm, _BALANCE_CON_KEY)
 
-function set_obj_balance_cons!(fm::FluxOpModel, c::AbstractVector, val)
+# TODO: Generalize this to other objective functions
+function set_lin_obj_balance_cons!(fm::FluxOpModel, c::AbstractVector, val)
     jpm = jump(fm)
     _delete!(jpm, _OBJ_BALANCE_CON_KEY)
     v = get_jpvars(jpm)
@@ -30,7 +31,7 @@ function set_obj_balance_cons!(fm::FluxOpModel, c::AbstractVector, val)
     )
     return fm
 end
-set_obj_balance_cons!(fm::FluxOpModel, val) = set_obj_balance_cons!(fm, linear_coefficients(fm), val)
+set_lin_obj_balance_cons!(fm::FluxOpModel, val) = set_lin_obj_balance_cons!(fm, linear_coefficients(fm), val)
 get_obj_balance_cons(fm::FluxOpModel) = jump(fm, _OBJ_BALANCE_CON_KEY)
 del_obj_balance_cons!(fm::FluxOpModel) = _delete!(jump(fm), _OBJ_BALANCE_CON_KEY)
 

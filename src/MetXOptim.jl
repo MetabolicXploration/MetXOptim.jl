@@ -3,7 +3,6 @@
 module MetXOptim
 
     using MetXBase
-    using MetXNetHub
     using JuMP
     using ProgressMeter
     using Base.Threads
@@ -33,16 +32,19 @@ module MetXOptim
     include("FluxOpModelUtils/boxing.jl")
     include("FluxOpModelUtils/constraints.jl")
     include("FluxOpModelUtils/dual_prices.jl")
+    include("FluxOpModelUtils/extras_interface.jl")
     include("FluxOpModelUtils/fba.jl")
     include("FluxOpModelUtils/fva.jl")
-    include("FluxOpModelUtils/interfaces.jl")
+    include("FluxOpModelUtils/jump_interface.jl")
+    include("FluxOpModelUtils/lep_interface.jl")
     include("FluxOpModelUtils/linobj_dep.jl")
+    include("FluxOpModelUtils/net_interface.jl")
     include("FluxOpModelUtils/objectives.jl")
     include("FluxOpModelUtils/r2_fba.jl")
 
-    #! include MetNetsUtils
-    include("MetNetsUtils/fva.jl")
-    include("MetNetsUtils/vertexes.jl")
-
+    #! include LEPModelUtils
+    include("LEPModelUtils/fba.jl")
+    include("LEPModelUtils/fva.jl")
+    include("LEPModelUtils/vertexes.jl")
 
 end

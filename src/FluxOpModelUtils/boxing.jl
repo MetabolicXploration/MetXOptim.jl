@@ -5,6 +5,9 @@
 #     )
 # end
 
+# TODO: add lep interface
+# TODO: del _bound_grad or improve it
+
 ## ------------------------------------------------------------------
 # Make a gradient descent moving a bound till an objective is match
 function _bound_grad_desc!(
@@ -96,14 +99,14 @@ function lb_grad_desc!(
         x0 = lb(opm, ider),                     # The initial point
         x1 = lb(opm, ider) - 1e-3,              # The next initial point
         prog_init = 3,
-        prog_th::Real = 1e-3,                   
+        prog_th::Real = 1e-3,
         verbose = false,
         max_box = (-Inf, Inf),
         maxΔx = 1.0,
         kwargs...
     )
 
-    target_flx = rxnindex(opm, ider)
+    target_flx = colindex(opm, ider)
 
     _bound_grad_desc!(
         opm; 
@@ -133,7 +136,7 @@ function ub_grad_desc!(
         kwargs...
     )
 
-    target_flx = rxnindex(opm, ider)
+    target_flx = colindex(opm, ider)
 
     _bound_grad_desc!(
         opm; 
@@ -277,7 +280,7 @@ function box!(opm::FluxOpModel,
     end
 
     # fva
-    ridxs = rxnindex(opm, ridxs)
+    ridxs = colindex(opm, ridxs)
     lb1, ub1 = fva!(opm, ridxs; verbose)
     lb1 .= round.(lb1; digits = round_digs)
     ub1 .= round.(ub1; digits = round_digs)

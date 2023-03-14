@@ -19,7 +19,7 @@ let
         netX = MetXNetHub.pull_net(model_id)
         glc_id = extras(netX, "EX_GLC")
         biom_id = extras(netX, "BIOM")
-        biom_idx = rxnindex(netX, biom_id)
+        biom_idx = colindex(netX, biom_id)
     
         # FVA
         verbose = true

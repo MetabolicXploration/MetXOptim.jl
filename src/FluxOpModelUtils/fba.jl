@@ -26,43 +26,12 @@ function FBAFluxOpModel(
 end
 
 ## ------------------------------------------------------------------
-function FBAFluxOpModel(
-        net::MetNet, solver; 
-        netfields = [:rxns], # fields to chache
-        netcopy = false # flag to make an internal copy of the net fields
-    )
-
-    opm = FBAFluxOpModel(
-        net.S, net.b, 
-        net.lb, net.ub, net.c, 
-        solver
-    )
-
-    # cache net
-    net0 = extract_fields(net, netfields)
-    net0 = netcopy ? deepcopy(net0) : net0
-    net1 = MetNet(; net0...)
-    metnet!(opm, net1)
-    
-    return opm
-end
-
-## ------------------------------------------------------------------
 # fba
 export fba, fba!
 function fba!(opm::FluxOpModel) 
     # We can not assume that the current obj is the linear
     set_linear_obj!(opm)
     
-    optimize!(opm)
-    return opm
-end
-
-## ------------------------------------------------------------------
-# AbstractMetNet
-function fba(net::AbstractMetNet, jump_args...; opmodel_kwargs...)
-    net = metnet(net)
-    opm = FBAFluxOpModel(net, jump_args...; opmodel_kwargs...)
     optimize!(opm)
     return opm
 end

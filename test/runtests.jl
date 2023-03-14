@@ -1,3 +1,7 @@
+# activate env
+using RunTestsEnv
+@activate_testenv
+
 using Test
 using MetXBase
 using MetXBase.UnicodePlots

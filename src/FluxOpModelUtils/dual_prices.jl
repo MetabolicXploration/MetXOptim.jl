@@ -23,7 +23,7 @@ function bound_dual_prices(opm::FluxOpModel, v0_id, test_points, bound_id;
         optimize_fun! = optimize!
     )
     
-    v0i = rxnindex(opm, v0_id)
+    v0i = colindex(opm, v0_id)
     v0lb_bk, v0ub_bk = bounds(opm, v0i)
 
     # select setter
@@ -101,7 +101,7 @@ function flux_dual_prices(opm::FluxOpModel, v0_id, test_points;
         optimize_fun! = optimize!
     )
 
-    v0i = rxnindex(opm, v0_id)
+    v0i = colindex(opm, v0_id)
     v0lb_bk, v0ub_bk = bounds(opm, v0i)
 
     P = length(test_points)
@@ -152,9 +152,9 @@ function bound_dual_prices_ratio_mat(opm::FluxOpModel,
         atol = 1e-5 # tol for ms
     )
 
-    v0_idx = rxnindex(opm, v0_id)
-    v1_idx = rxnindex(opm, v1_id)
-    obj_idx = rxnindex(opm, obj_id)
+    v0_idx = colindex(opm, v0_id)
+    v1_idx = colindex(opm, v1_id)
+    obj_idx = colindex(opm, obj_id)
 
     if isnothing(ratio_mat)
         ratio_mat = zeros(length(v0_test_points), length(v1_test_points))

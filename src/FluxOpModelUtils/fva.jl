@@ -24,7 +24,7 @@ function _fva!(opm::FluxOpModel, ridxs;
     )
 
     # ridxs
-    ridxs = rxnindex(opm, ridxs)
+    ridxs = colindex(opm, ridxs)
 
     # bounds
     fvalb = lb(opm, ridxs)
@@ -50,7 +50,7 @@ function fva!(opm::FluxOpModel, ridxs;
     verbose = config(opm, :verbose, verbose)
 
     # scalar
-    ridxs = rxnindex(opm, ridxs)
+    ridxs = colindex(opm, ridxs)
     isa(ridxs, Int) && return rxn_extrema!(opm, ridxs)
     
     verbose && (prog = Progress(length(ridxs); desc = "Doing FVA (-t1)  "))

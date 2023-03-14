@@ -2,7 +2,7 @@
 # MetNet
 # TODO: create the OpModel threaded version
 export fva_th
-function fva_th(net::MetNet, solver, ridxs = eachindex(reactions(net));
+function fva_th(lep::LEPModel, solver, ridxs = eachindex(colids(lep));
         verbose = false,
         oniter = nothing,
         opmodel_kwargs...
@@ -12,16 +12,16 @@ function fva_th(net::MetNet, solver, ridxs = eachindex(reactions(net));
     
     # models pool
     opm_pool = [ 
-        FBAFluxOpModel(net, solver; opmodel_kwargs...)
+        FBAFluxOpModel(lep, solver; opmodel_kwargs...)
         for _ in 1:nths
     ]
     
     nths = nthreads()
-    ridxs = rxnindex(net, ridxs)
+    ridxs = colindex(lep, ridxs)
 
     # bounds
-    fvalb = lb(net, ridxs) |> copy
-    fvaub = ub(net, ridxs) |> copy
+    fvalb = lb(lep, ridxs) |> copy
+    fvaub = ub(lep, ridxs) |> copy
 
     # verbose
     bal = zeros(Int, nths)
@@ -56,19 +56,19 @@ function fva_th(net::MetNet, solver, ridxs = eachindex(reactions(net));
 end 
 
 # ------------------------------------------------------------------
-function fva(net::MetNet, solver, ridxs = eachindex(reactions(net));
+function fva(lep::LEPModel, solver, ridxs = eachindex(colids(lep));
         th = false,
         verbose = false,
         oniter = nothing,
         opmodel_kwargs...
     )
     if th
-        return fva_th(net, solver, ridxs; verbose, oniter, opmodel_kwargs...)
+        return fva_th(lep, solver, ridxs; verbose, oniter, opmodel_kwargs...)
     else
-        opm = FBAFluxOpModel(net, solver; opmodel_kwargs...)
+        opm = FBAFluxOpModel(lep, solver; opmodel_kwargs...)
         return fva!(opm, ridxs; verbose, oniter)
     end
 end
 
 # AbstractMetNet
-fva(net::AbstractMetNet, args...; kwargs...) = fva(metnet(net), args...; kwargs...)
+fva(model, args...; kwargs...) = fva(lepmodel(model), args...; kwargs...)

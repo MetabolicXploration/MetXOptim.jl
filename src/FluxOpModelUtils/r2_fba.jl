@@ -1,4 +1,3 @@
-## ------------------------------------------------------------------
 export R2FBAFluxOpModel
 function R2FBAFluxOpModel(
         net::MetNet, solver; 
@@ -8,13 +7,14 @@ function R2FBAFluxOpModel(
     )
 
     opm = FBAFluxOpModel(net, solver; netfields, netcopy)
-    set_v2_obj!(opm, r2_sense)
+    set_v2_obj!(opm, r2_sense) # registry r2_obj
 
     return opm
 end
 
 ## ------------------------------------------------------------------
-# TODO: Test this
+## ------------------------------------------------------------------
+# TODO: Redo this as a obj stack execution infrastructure 
 export r2_fba!
 function r2_fba!(opm::FluxOpModel; 
         clear_bal_cons = true
@@ -27,7 +27,7 @@ function r2_fba!(opm::FluxOpModel;
 
     # fix objval
     objval = objective_value(opm)
-    set_obj_balance_cons!(opm, objval)
+    set_lin_obj_balance_cons!(opm, objval)
     
     # Optimize v^2
     set_v2_obj!(opm)
