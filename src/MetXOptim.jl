@@ -48,6 +48,6 @@ module MetXOptim
     include("LEPModelUtils/vertexes.jl")
 
     # exports
-    @_exportall_words()
+    @_exportall_non_underscore()
 
 end
