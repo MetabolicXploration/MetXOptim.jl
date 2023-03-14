@@ -33,3 +33,6 @@ function box(lep::LEPModel, solver;
 
     return lep
 end
+
+# lep interface
+box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)

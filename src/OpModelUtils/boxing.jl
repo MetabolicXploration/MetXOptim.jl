@@ -270,7 +270,6 @@ function _safe_box!(opm::OpModel, colidxs, box_lb, box_ub;
     
 end
 
-export box, box!
 function box!(opm::OpModel,
         colidxs = eachindex(colids(opm));
         verbose = false,
