@@ -1,5 +1,5 @@
 import GLPK, Clp, Tulip
-import MetXBase: COBREXA
+# import MetXGEMs: COBREXA
 
 import Random
 Random.seed!(1234)

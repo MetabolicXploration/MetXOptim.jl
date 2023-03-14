@@ -8,8 +8,9 @@ let
     println()
 
     model_id = "ecoli_core"
-    netX = MetXNetHub.pull_net(model_id)
-    opm = fba(netX, TESTS_LINSOLVER)
+    netX = pull_net(model_id)
+    lepX = lepmodel(netX)
+    opm = fba(lepX, TESTS_LINSOLVER)
     sol0 = solution(opm)
     
     # COBREXA (COBREXA_test_data script)
@@ -18,13 +19,13 @@ let
 
     @test all(isapprox.(sol0, sol1; atol = 1e-8))
 
-    # EchelonMetNet
-    enet = EchelonMetNet(netX)
-    eopm = fba(enet, TESTS_LINSOLVER)
+    # EchelonLEPModel
+    elep = EchelonLEPModel(lepX)
+    eopm = fba(elep, TESTS_LINSOLVER)
 
     @test isapprox.(
-        solution(eopm, reactions(enet)),
-        solution(opm, reactions(enet));
+        solution(eopm, colids(elep)),
+        solution(opm, colids(elep));
         atol = 1e-8
     ) |> all
 

@@ -1,5 +1,4 @@
 # ------------------------------------------------------------------
-# MetNet
 # TODO: create the OpModel threaded version
 export fva_th
 function fva_th(lep::LEPModel, solver, ridxs = eachindex(colids(lep));
@@ -12,7 +11,7 @@ function fva_th(lep::LEPModel, solver, ridxs = eachindex(colids(lep));
     
     # models pool
     opm_pool = [ 
-        FBAFluxOpModel(lep, solver; opmodel_kwargs...)
+        FBAOpModel(lep, solver; opmodel_kwargs...)
         for _ in 1:nths
     ]
     
@@ -65,10 +64,10 @@ function fva(lep::LEPModel, solver, ridxs = eachindex(colids(lep));
     if th
         return fva_th(lep, solver, ridxs; verbose, oniter, opmodel_kwargs...)
     else
-        opm = FBAFluxOpModel(lep, solver; opmodel_kwargs...)
+        opm = FBAOpModel(lep, solver; opmodel_kwargs...)
         return fva!(opm, ridxs; verbose, oniter)
     end
 end
 
-# AbstractMetNet
+# LEP interface
 fva(model, args...; kwargs...) = fva(lepmodel(model), args...; kwargs...)

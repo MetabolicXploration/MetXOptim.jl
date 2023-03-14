@@ -5,18 +5,18 @@ const _CURR_OBJECTIVE_KEY = :_CURR_OBJECTIVE_KEY
 ## ------------------------------------------------------------------------------
 import JuMP.objective_function
 export objective_function
-objective_function(opm::FluxOpModel) = jump(opm, _CURR_OBJECTIVE_KEY, nothing)
+objective_function(opm::OpModel) = jump(opm, _CURR_OBJECTIVE_KEY, nothing)
 
 import JuMP.objective_sense
 export objective_sense
-function objective_sense(opm::FluxOpModel) 
+function objective_sense(opm::OpModel) 
     fbox = jump(opm, _CURR_OBJECTIVE_KEY, nothing)
     isnothing(fbox) ? nothing : fbox.sense
 end
 
 ## ------------------------------------------------------------------------------
 export set_objective_function!
-function set_objective_function!(objsetter!::Function, opm::FluxOpModel, newobjkey::Symbol)
+function set_objective_function!(objsetter!::Function, opm::OpModel, newobjkey::Symbol)
     jpm = jump(opm)
 
     # current to last
@@ -38,7 +38,7 @@ function set_objective_function!(objsetter!::Function, opm::FluxOpModel, newobjk
     return opm
 end
 
-function set_objective_function!(opm::FluxOpModel, fbox::ObjFunBox)
+function set_objective_function!(opm::OpModel, fbox::ObjFunBox)
     
     jpm = jump(opm)
 
@@ -55,7 +55,7 @@ function set_objective_function!(opm::FluxOpModel, fbox::ObjFunBox)
     return opm
 end
 
-function set_objective_function!(opm::FluxOpModel, newobjkey::Symbol)
+function set_objective_function!(opm::OpModel, newobjkey::Symbol)
 
     jpm = jump(opm)
     
@@ -65,11 +65,11 @@ function set_objective_function!(opm::FluxOpModel, newobjkey::Symbol)
     set_objective_function!(opm, jpm[newobjkey])
 end
 
-set_last_obj!(opm::FluxOpModel) = set_objective_function!(opm, _CURR_OBJECTIVE_KEY)
+set_last_obj!(opm::OpModel) = set_objective_function!(opm, _CURR_OBJECTIVE_KEY)
 
 ## ------------------------------------------------------------------------------
 export set_objective_sense!
-function set_objective_sense!(opm::FluxOpModel, sense)
+function set_objective_sense!(opm::OpModel, sense)
     currfbox = objective_function(opm)
     isnothing(currfbox) && error("No objective set!")
     newfbox = ObjFunBox(currfbox; sense)
@@ -81,7 +81,7 @@ end
 # execute f and ensure the model objective do not change.
 # returns the value of f()
 export keepobj
-function keepobj(f::Function, opm::FluxOpModel)
+function keepobj(f::Function, opm::OpModel)
     fbox = nothing
     try
         fbox = jump(opm, _CURR_OBJECTIVE_KEY, nothing)
@@ -95,20 +95,21 @@ function keepobj(f::Function, opm::FluxOpModel)
 end
 
 ## ------------------------------------------------------------------------------
+# Standard linear objective
 # It MAXIMIZE c' * v[idx]
 const _LIN_OBJECTIVE_KEY = :_LIN_OBJECTIVE_KEY
 export set_linear_obj!
-function _set_linear_obj!(opm::FluxOpModel, idx, c)
+function _set_linear_obj!(opm::OpModel, idx, c)
     set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm, idx)
         @JuMP.objective(jpm, MOI.MAX_SENSE, c' * v)
     end
     return opm
 end
-set_linear_obj!(opm::FluxOpModel, idx, c::Real) = _set_linear_obj!(opm, idx, c)
-set_linear_obj!(opm::FluxOpModel, idx, c::AbstractVector) = _set_linear_obj!(opm, idx, c)
+set_linear_obj!(opm::OpModel, idx, c::Real) = _set_linear_obj!(opm, idx, c)
+set_linear_obj!(opm::OpModel, idx, c::AbstractVector) = _set_linear_obj!(opm, idx, c)
 
-function set_linear_obj!(opm::FluxOpModel, idx, sense::MOI.OptimizationSense)
+function set_linear_obj!(opm::OpModel, idx, sense::MOI.OptimizationSense)
     set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm, idx)
         @JuMP.objective(jpm, sense, sum(v))
@@ -117,7 +118,7 @@ function set_linear_obj!(opm::FluxOpModel, idx, sense::MOI.OptimizationSense)
 end
 
 # It MAXIMIZE c'*v
-function set_linear_obj!(opm::FluxOpModel, c::AbstractVector)
+function set_linear_obj!(opm::OpModel, c::AbstractVector)
     set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm)
         @JuMP.objective(jpm, MOI.MAX_SENSE, c' * v)
@@ -125,17 +126,21 @@ function set_linear_obj!(opm::FluxOpModel, c::AbstractVector)
     return opm
 end
 
-set_linear_obj!(opm::FluxOpModel, net::MetNet) = 
-    set_linear_obj!(opm, linear_coefficients(net))
+set_linear_obj!(opm::OpModel, lep::LEPModel) = 
+    set_linear_obj!(opm, linear_coefficients(lep))
 
 # Set the last linear objective
-set_linear_obj!(opm::FluxOpModel) =
+set_linear_obj!(opm::OpModel) =
     set_objective_function!(opm, _LIN_OBJECTIVE_KEY)
 
 ## ------------------------------------------------------------------------------
+# Standard quad objective
 const _V2_OBJECTIVE_KEY = :_V2_OBJECTIVE_KEY
 export set_v2_obj!
-function set_v2_obj!(opm::FluxOpModel, sense::MOI.OptimizationSense)
+
+# TODO: rename to quad obj
+
+function set_v2_obj!(opm::OpModel, sense::MOI.OptimizationSense)
     set_objective_function!(opm, _V2_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm)
         JuMP.@objective(jpm, sense, v' * v)
@@ -143,7 +148,7 @@ function set_v2_obj!(opm::FluxOpModel, sense::MOI.OptimizationSense)
     return opm
 end
 
-function set_v2_obj!(opm::FluxOpModel, idxs, sense::MOI.OptimizationSense)
+function set_v2_obj!(opm::OpModel, idxs, sense::MOI.OptimizationSense)
     set_objective_function!(opm, _V2_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm, idxs)
         JuMP.@objective(jpm, sense, v' * v)
@@ -151,7 +156,7 @@ function set_v2_obj!(opm::FluxOpModel, idxs, sense::MOI.OptimizationSense)
     return opm
 end
 
-function set_v2_obj!(opm::FluxOpModel, C::AbstractMatrix, sense::MOI.OptimizationSense)
+function set_v2_obj!(opm::OpModel, C::AbstractMatrix, sense::MOI.OptimizationSense)
     set_objective_function!(opm, _V2_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm)
         JuMP.@objective(jpm, sense, v' * C * v)
@@ -160,7 +165,11 @@ function set_v2_obj!(opm::FluxOpModel, C::AbstractMatrix, sense::MOI.Optimizatio
 end
 
 # Set the last quadratic objective
-function set_v2_obj!(opm::FluxOpModel) 
+function set_v2_obj!(opm::OpModel) 
     set_objective_function!(opm, _V2_OBJECTIVE_KEY)
     return opm
 end
+
+# LEP
+set_v2_obj!(opm::OpModel, lep::LEPModel) = 
+    set_v2_obj!(opm::OpModel, quad_coefficients(lep), MOI.MAX_SENSE)

@@ -9,14 +9,13 @@ module MetXOptim
     using SparseArrays
     
     import GLPK, Clp, Ipopt, Tulip
-    import MetXBase: _setindex!, chunkedChannel, run_callbacks
 
     #! include .
     
     #! include Types
-    include("Types/AbstractOpModel.jl")
-    include("Types/FluxOpModel.jl")
-    include("Types/ObjFunBox.jl")
+    include("Types/0_AbstractOpModel.jl")
+    include("Types/1_OpModel.jl")
+    include("Types/2_ObjFunBox.jl")
     
     #! include Utils
     include("Utils/const.jl")
@@ -27,24 +26,28 @@ module MetXOptim
     include("AbstractOpModelUtils/jump_utils.jl")
     include("AbstractOpModelUtils/optimize.jl")
 
-    #! include FluxOpModelUtils
-    include("FluxOpModelUtils/base.jl")
-    include("FluxOpModelUtils/boxing.jl")
-    include("FluxOpModelUtils/constraints.jl")
-    include("FluxOpModelUtils/dual_prices.jl")
-    include("FluxOpModelUtils/extras_interface.jl")
-    include("FluxOpModelUtils/fba.jl")
-    include("FluxOpModelUtils/fva.jl")
-    include("FluxOpModelUtils/jump_interface.jl")
-    include("FluxOpModelUtils/lep_interface.jl")
-    include("FluxOpModelUtils/linobj_dep.jl")
-    include("FluxOpModelUtils/net_interface.jl")
-    include("FluxOpModelUtils/objectives.jl")
-    include("FluxOpModelUtils/r2_fba.jl")
+    #! include OpModelUtils
+    include("OpModelUtils/base.jl")
+    include("OpModelUtils/boxing.jl")
+    include("OpModelUtils/constraints.jl")
+    include("OpModelUtils/dual_prices.jl")
+    include("OpModelUtils/extras_interface.jl")
+    include("OpModelUtils/fba.jl")
+    include("OpModelUtils/fva.jl")
+    include("OpModelUtils/jump_interface.jl")
+    include("OpModelUtils/lep_interface.jl")
+    include("OpModelUtils/linobj_dep.jl")
+    include("OpModelUtils/net_interface.jl")
+    include("OpModelUtils/objectives.jl")
+    include("OpModelUtils/r2_fba.jl")
 
     #! include LEPModelUtils
+    include("LEPModelUtils/boxing.jl")
     include("LEPModelUtils/fba.jl")
     include("LEPModelUtils/fva.jl")
     include("LEPModelUtils/vertexes.jl")
+
+    # exports
+    @_exportall_words()
 
 end

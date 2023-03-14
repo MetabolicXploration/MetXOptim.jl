@@ -14,18 +14,18 @@ let
     for model_id in OPMODEL_UPDATE_TEST_MODELS
         
         # MetX
-        netX = MetXNetHub.pull_net(model_id)
+        netX = pull_net(model_id)
         glc_id = extras(netX, "EX_GLC")
         biom_id = extras(netX, "BIOM")
 
         # FBA model
-        opm = FBAFluxOpModel(netX, TESTS_LINSOLVER)
+        opm = FBAOpModel(netX, TESTS_LINSOLVER)
         
         # Test glc vs biom
         netX_biomv = Float64[]
         for lb_ in lbs
             lb!(opm, glc_id, lb_)
-            opm = fba!(opm)
+            opm = optimize!(opm)
             push!(netX_biomv, solution(opm, biom_id))
         end
         

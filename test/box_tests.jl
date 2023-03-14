@@ -9,28 +9,27 @@ let
 
     verbose = true
 
-    model_id = "ECC2"
-    # model_id = "ecoli_core"
-    net1 = MetXNetHub.pull_net(model_id)
+    model_id = "ecoli_core"
+    net1 = pull_net(model_id)
+    lep1 = lepmodel(net1)
+    
     glc_ex = extras(net1, "EX_GLC")
     biom_id = extras(net1, "BIOM")
     
     # box
     println()
-    net2 = box(net1, TESTS_LINSOLVER; 
+    lep2 = box(lep1, TESTS_LINSOLVER; 
         verbose, protect_obj = true
     )
 
-    sol1 = solution(fba(net1, TESTS_LINSOLVER), biom_id)
-    sol2 = solution(fba(net2, TESTS_LINSOLVER), biom_id)
+    sol1 = solution(fba(lep1, TESTS_LINSOLVER), biom_id)
+    sol2 = solution(fba(lep2, TESTS_LINSOLVER), biom_id)
     @show sol1
-    @show size(net1)
+    @show size(lep1)
     @show sol2
-    @show size(net2)
+    @show size(lep2)
     
-    @test all(size(net1) .>= size(net2))
+    @test all(size(lep1) .>= size(lep2))
     @test isapprox(sol1, sol2; atol = 1e-6)
-
-    println()
     
 end

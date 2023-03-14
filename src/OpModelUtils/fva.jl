@@ -1,6 +1,6 @@
-# TODO: create a size(opm::FluxOpModel)
+# TODO: create a size(opm::OpModel)
 export rxn_extrema!
-function rxn_extrema!(opm::FluxOpModel, ri::Int)
+function rxn_extrema!(opm::OpModel, ri::Int)
     
     # max
     set_linear_obj!(opm, ri, 1.0)
@@ -16,10 +16,10 @@ function rxn_extrema!(opm::FluxOpModel, ri::Int)
 end
 
 export rxn_extrema
-rxn_extrema(opm::FluxOpModel, ridx::Int; T = Float64) = keepobj(() -> rxn_extrema!(opm, ridx; T), opm)
+rxn_extrema(opm::OpModel, ridx::Int; T = Float64) = keepobj(() -> rxn_extrema!(opm, ridx; T), opm)
 
 # ------------------------------------------------------------------
-function _fva!(opm::FluxOpModel, ridxs; 
+function _fva!(opm::OpModel, ridxs; 
         oniter = nothing,
     )
 
@@ -41,7 +41,7 @@ function _fva!(opm::FluxOpModel, ridxs;
 end
 
 export fva!
-function fva!(opm::FluxOpModel, ridxs;
+function fva!(opm::OpModel, ridxs;
         oniter = nothing,
         verbose = true
     )   
@@ -64,6 +64,6 @@ function fva!(opm::FluxOpModel, ridxs;
 end
 
 export fva
-fva(opm::FluxOpModel, args...; kwargs...) = keepobj(() -> fva!(opm, args...; kwargs...), opm)
+fva(opm::OpModel, args...; kwargs...) = keepobj(() -> fva!(opm, args...; kwargs...), opm)
 
 

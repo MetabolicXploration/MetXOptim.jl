@@ -1,6 +1,6 @@
 # # TODO: add flag for reducing or not (in addition of specific fluxes protection)
 # export boxxing
-# function boxxing(net::MetNet; 
+# function boxxing(lep::LEPModel; 
 #         protect = []
 #     )
 # end
@@ -11,7 +11,7 @@
 ## ------------------------------------------------------------------
 # Make a gradient descent moving a bound till an objective is match
 function _bound_grad_desc!(
-        opm::FluxOpModel;
+        opm::OpModel;
         target_flx::Int,
         target_upfun!::Function,
         objfun!::Function, 
@@ -95,7 +95,7 @@ _fit_ub_target_upfun!(target_flx) = (opm, b) -> ub!(opm, target_flx, b)
 
 export lb_grad_desc!
 function lb_grad_desc!(
-        opm::FluxOpModel, ider, obj_target;
+        opm::OpModel, ider, obj_target;
         x0 = lb(opm, ider),                     # The initial point
         x1 = lb(opm, ider) - 1e-3,              # The next initial point
         prog_init = 3,
@@ -125,7 +125,7 @@ end
 
 export ub_grad_desc!
 function ub_grad_desc!(
-        opm::FluxOpModel, ider, obj_target;
+        opm::OpModel, ider, obj_target;
         x0 = ub(opm, ider),                     # The initial point
         x1 = ub(opm, ider) + 1e-3,              # The next initial point
         prog_init = 3,
@@ -162,7 +162,7 @@ function _try_opt_objective!(opm)
 end
 
 # add box bounds but checking an objective (the current at opm) is protected
-function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub; 
+function _safe_box!(opm::OpModel, colidxs, box_lb, box_ub; 
         batch_len = min(length(opm), 10),
         verbose = true,
         obj_prot_tol = 1e-3,
@@ -175,7 +175,7 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
     # copy
     lb0, ub0 = bounds(opm)
     
-    rbatchs = MetXBase.chunks(ridxs; chnklen = batch_len)
+    rbatchs = MetXBase.chunks(colidxs; chnklen = batch_len)
     verbose && (prog = ProgressUnknown(; desc = "Fixing objective"))
     
     depv = objective_dependence(opm)
@@ -191,6 +191,9 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
         objval1 = _try_opt_objective!(opm)
         if isnan(objval1)
 
+            # TODO: make this but robust 
+            error("Objective value not recoverable, boxxing failed")
+
             # restore
             bounds!(opm, rbatch; lb = lb0[rbatch], ub = ub0[rbatch])
             
@@ -198,7 +201,7 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
 
                 verbose && next!(prog; 
                     showvalues = [
-                        (:rxn, reactions(opm, rxi)),
+                        (:rxn, colids(opm, rxi)),
                         (:objval0, objval0),
                         (:objval1, objval1),
                         (:orig, (lb0[rxi], ub0[rxi])),
@@ -223,11 +226,14 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
 
         if !isapprox(objval0, objval1; rtol = obj_prot_tol) 
 
+            # TODO: make this but robust 
+            error("Objective value not recoverable, boxxing failed")
+
             for (rxi, dep) in zip(rbatch, depv[rbatch])
         
                 verbose && next!(prog; 
                     showvalues = [
-                        (:rxn, reactions(opm, rxi)),
+                        (:rxn, colids(opm, rxi)),
                         (:objval0, objval0),
                         (:objval1, objval1),
                         (:orig, (lb0[rxi], ub0[rxi])),
@@ -251,7 +257,7 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
 
         verbose && next!(prog; 
             showvalues = [
-                (:rxn, reactions(opm, first(rbatch))),
+                (:rxn, colids(opm, first(rbatch))),
                 (:objval0, objval0),
                 (:objval1, objval1)
             ]
@@ -265,8 +271,8 @@ function _safe_box!(opm::FluxOpModel, ridxs, box_lb, box_ub;
 end
 
 export box, box!
-function box!(opm::FluxOpModel,
-        ridxs = eachindex(reactions(opm));
+function box!(opm::OpModel,
+        colidxs = eachindex(colids(opm));
         verbose = false,
         protect_obj = false,
         obj_prot_tol = 1e-3,
@@ -280,58 +286,21 @@ function box!(opm::FluxOpModel,
     end
 
     # fva
-    ridxs = colindex(opm, ridxs)
-    lb1, ub1 = fva!(opm, ridxs; verbose)
+    colidxs = colindex(opm, colidxs)
+    lb1, ub1 = fva!(opm, colidxs; verbose)
     lb1 .= round.(lb1; digits = round_digs)
     ub1 .= round.(ub1; digits = round_digs)
 
     # objval1
     if protect_obj
         set_objective_function!(opm, obj0)
-        _safe_box!(opm, ridxs, lb1, ub1; 
+        _safe_box!(opm, colidxs, lb1, ub1; 
             batch_len, verbose, obj_prot_tol
         )
     else
-        bounds!(opm, ridxs; lb = lb1, ub = ub1)
+        bounds!(opm, colidxs; lb = lb1, ub = ub1)
     end
 
     return opm
 
-end
-
-function box!(net::MetNet, solver; kwargs...) 
-
-    opm = FBAFluxOpModel(net, solver)
-    opm = box!(opm; kwargs...)
-
-    lb!(net, lb(opm))
-    ub!(net, ub(opm))
-    return net
-end
-
-# TODO: new name sug: inscribe!
-function box(net::MetNet, solver; 
-        reduce = true,
-        eps = 0.0, protect = [],
-        box_kwargs...
-    ) 
-
-    if reduce # empty_fixxed! touch S and b
-        net = deepcopy(net)
-    else
-        net = MetNet(net; 
-            lb = copy(lb(net)),
-            ub = copy(ub(net)),
-        )
-    end
-    
-    box!(net, solver; box_kwargs...) 
-    
-    
-    if reduce
-        empty_fixxed!(net; eps, protect)
-        net = emptyless_model(net)
-    end
-
-    return net
 end

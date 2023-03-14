@@ -16,7 +16,7 @@ let
         println("."^60)
         println()
 
-        netX = MetXNetHub.pull_net(model_id)
+        netX = pull_net(model_id)
         glc_id = extras(netX, "EX_GLC")
         biom_id = extras(netX, "BIOM")
         biom_idx = colindex(netX, biom_id)
@@ -40,10 +40,10 @@ let
         fva_bounds_file = joinpath(TEST_DATDIR, string(model_id, "--fva-bounds.tsv"))
         netCB_fvalb, netCB_fvaub = _read_tsv(Float64, fva_bounds_file)
             
-        println("\n", "BIOMASS: ")
-        @show netX_fvalb[biom_idx], netX_fvaub[biom_idx]
-        @show netX_th_fvalb[biom_idx], netX_th_fvaub[biom_idx]
-        @show netCB_fvalb[biom_idx], netCB_fvaub[biom_idx]
+        # println("\n", "BIOMASS: ")
+        # @show netX_fvalb[biom_idx], netX_fvaub[biom_idx]
+        # @show netX_th_fvalb[biom_idx], netX_th_fvaub[biom_idx]
+        # @show netCB_fvalb[biom_idx], netCB_fvaub[biom_idx]
     
         @test all(isapprox(netX_fvalb , netX_th_fvalb; atol = 1e-5))
         @test all(isapprox(netX_fvaub , netX_th_fvaub; atol = 1e-5))

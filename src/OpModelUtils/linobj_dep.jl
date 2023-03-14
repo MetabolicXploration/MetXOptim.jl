@@ -1,6 +1,6 @@
 # tell if a flux is positive proporto or negatively prop the given lin obj
 export objective_dependence
-function _objective_dependence(opm::FluxOpModel, rtol)
+function _objective_dependence(opm::OpModel, rtol)
     
     # sense 1
     set_objective_sense!(opm, MAX_SENSE)
@@ -19,5 +19,5 @@ function _objective_dependence(opm::FluxOpModel, rtol)
     end 
 end
 
-objective_dependence(opm::FluxOpModel; rtol = 1e-5) =
+objective_dependence(opm::OpModel; rtol = 1e-5) =
     keepobj(() -> _objective_dependence(opm, rtol), opm) 

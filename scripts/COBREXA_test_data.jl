@@ -24,7 +24,7 @@ let
     for model_id in ["ecoli_core", "ECC2", "iJR904"]
         
         # MetX
-        netX = MetXNetHub.pull_net(model_id)
+        netX = pull_net(model_id)
         glc_id = extras(netX, "EX_GLC")
         biom_id = extras(netX, "BIOM")
 
@@ -67,7 +67,7 @@ let
     # --------------------
     # FBA
     model_id = "ecoli_core"
-    netX = MetXNetHub.pull_net(model_id)
+    netX = pull_net(model_id)
     cxanet = convert(COBREXA.CoreModel, netX)
     
     sol = COBREXA.flux_balance_analysis_vec(cxanet, TESTS_LINSOLVER;
@@ -103,7 +103,7 @@ let
         println("."^60)
         println()
 
-        netX = MetXNetHub.pull_net(model_id)
+        netX = pull_net(model_id)
         glc_id = extras(netX, "EX_GLC")
         biom_id = extras(netX, "BIOM")
         biom_idx = colindex(netX, biom_id)

@@ -1,8 +1,8 @@
 [deps]
-MetXGEMs = "f53f3d78-cab5-4f57-a3bb-d62de48011ec"
 MetXBase = "0b8c4419-604a-4c8e-9eed-0f79de4a140e"
-MetXNetHub = "be9415a8-24b2-49ae-ba75-41eeaa9f722f"
+MetXGEMs = "f53f3d78-cab5-4f57-a3bb-d62de48011ec"
 MetXOptim = "672bf490-d3aa-44fe-a664-43445036b9de"
+MetXNetHub = "be9415a8-24b2-49ae-ba75-41eeaa9f722f"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Scratch = "6c6a2e73-6563-6170-7368-637461726353"
 Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"

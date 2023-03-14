@@ -7,7 +7,7 @@ const _UPPER_BOUND_CON_KEY = :ub_con
 
 ## ------------------------------------------------------------------------------
 # balance constraints
-function set_balance_cons!(fm::FluxOpModel, S::AbstractMatrix, b::AbstractVector)
+function set_balance_cons!(fm::OpModel, S::AbstractMatrix, b::AbstractVector)
     jpm = jump(fm)
     haskey(jpm, _BALANCE_CON_KEY) && delete!(jpm, _BALANCE_CON_KEY)
     v = get_jpvars(jpm)
@@ -18,10 +18,10 @@ function set_balance_cons!(fm::FluxOpModel, S::AbstractMatrix, b::AbstractVector
     )
     return fm
 end
-get_balance_cons(fm::FluxOpModel) = jump(fm, _BALANCE_CON_KEY)
+get_balance_cons(fm::OpModel) = jump(fm, _BALANCE_CON_KEY)
 
 # TODO: Generalize this to other objective functions
-function set_lin_obj_balance_cons!(fm::FluxOpModel, c::AbstractVector, val)
+function set_lin_obj_balance_cons!(fm::OpModel, c::AbstractVector, val)
     jpm = jump(fm)
     _delete!(jpm, _OBJ_BALANCE_CON_KEY)
     v = get_jpvars(jpm)
@@ -31,13 +31,13 @@ function set_lin_obj_balance_cons!(fm::FluxOpModel, c::AbstractVector, val)
     )
     return fm
 end
-set_lin_obj_balance_cons!(fm::FluxOpModel, val) = set_lin_obj_balance_cons!(fm, linear_coefficients(fm), val)
-get_obj_balance_cons(fm::FluxOpModel) = jump(fm, _OBJ_BALANCE_CON_KEY)
-del_obj_balance_cons!(fm::FluxOpModel) = _delete!(jump(fm), _OBJ_BALANCE_CON_KEY)
+set_lin_obj_balance_cons!(fm::OpModel, val) = set_lin_obj_balance_cons!(fm, linear_coefficients(fm), val)
+get_obj_balance_cons(fm::OpModel) = jump(fm, _OBJ_BALANCE_CON_KEY)
+del_obj_balance_cons!(fm::OpModel) = _delete!(jump(fm), _OBJ_BALANCE_CON_KEY)
 
 ## ------------------------------------------------------------------------------
 # bounds constraints
-function set_lower_bound_cons!(fm::FluxOpModel, lb::AbstractVector)
+function set_lower_bound_cons!(fm::OpModel, lb::AbstractVector)
     jpm = jump(fm)
     haskey(jpm, _LOWER_BOUND_CON_KEY) && delete!(jpm, _LOWER_BOUND_CON_KEY)
     v = get_jpvars(jpm)
@@ -47,9 +47,9 @@ function set_lower_bound_cons!(fm::FluxOpModel, lb::AbstractVector)
     )
     return fm
 end
-get_lower_bound_cons(fm::FluxOpModel) = jump(fm, _LOWER_BOUND_CON_KEY)
+get_lower_bound_cons(fm::OpModel) = jump(fm, _LOWER_BOUND_CON_KEY)
 
-function set_upper_bound_cons!(fm::FluxOpModel, ub::AbstractVector)
+function set_upper_bound_cons!(fm::OpModel, ub::AbstractVector)
     jpm = jump(fm)
     haskey(jpm, _UPPER_BOUND_CON_KEY) && delete!(jpm, _UPPER_BOUND_CON_KEY)
     v = get_jpvars(jpm)
@@ -59,5 +59,5 @@ function set_upper_bound_cons!(fm::FluxOpModel, ub::AbstractVector)
     )
     return fm
 end
-get_upper_bound_cons(fm::FluxOpModel) = jump(fm, _UPPER_BOUND_CON_KEY)
+get_upper_bound_cons(fm::OpModel) = jump(fm, _UPPER_BOUND_CON_KEY)
 

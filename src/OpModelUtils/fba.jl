@@ -1,17 +1,17 @@
 ## ------------------------------------------------------------------
 # Just a wrapper that add all the basic constraints of FBA
-export FBAFluxOpModel
-function FBAFluxOpModel(
+export FBAOpModel
+function FBAOpModel(
         S::AbstractMatrix, b::AbstractVector, 
         lb::AbstractVector, ub::AbstractVector, 
         c::AbstractVector, 
         jump_args...
-    )::FluxOpModel
+    )::OpModel
 
     # TODO: Add some checks (dims, types, etc)
 
     jpm = JuMP.Model(jump_args...)
-    opm = FluxOpModel(jpm)
+    opm = OpModel(jpm)
     JuMP.set_silent(jpm)
 
     set_jpvars!(opm, size(S, 2))
@@ -28,7 +28,7 @@ end
 ## ------------------------------------------------------------------
 # fba
 export fba, fba!
-function fba!(opm::FluxOpModel) 
+function fba!(opm::OpModel) 
     # We can not assume that the current obj is the linear
     set_linear_obj!(opm)
     
