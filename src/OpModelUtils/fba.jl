@@ -1,6 +1,5 @@
 ## ------------------------------------------------------------------
 # Just a wrapper that add all the basic constraints of FBA
-export FBAOpModel
 function FBAOpModel(
         S::AbstractMatrix, b::AbstractVector, 
         lb::AbstractVector, ub::AbstractVector, 
