@@ -44,7 +44,6 @@ function bound_dual_prices(opm::OpModel, v0_id, test_points, bound_id;
         obj_delta_vec = zeros(P)
     end
     for (i, b) in enumerate(test_points)
-        
         setter!(opm, v0i, b)
         optimize_fun!(opm)
         delta_mat[i, :] .= solution(opm)
@@ -55,8 +54,11 @@ function bound_dual_prices(opm::OpModel, v0_id, test_points, bound_id;
 
     # compute line
     # objective
-    obj_delta_vec
-    obj_m, obj_err = _linear_fit(test_points, obj_delta_vec)
+    _, obj_m, obj_err = _linear_fit(test_points, obj_delta_vec)
+    # @info "bound_dual_prices"
+    # @show v0_id
+    # @show test_points
+    # @show obj_delta_vec
 
     # variables
     vars_ms, vars_errs = zeros(N), zeros(N)
@@ -118,7 +120,7 @@ function flux_dual_prices(opm::OpModel, v0_id, test_points;
     # compute line
     # objective
     obj_delta_vec
-    obj_m, obj_err = _linear_fit(test_points, obj_delta_vec)
+    _, obj_m, obj_err = _linear_fit(test_points, obj_delta_vec)
 
     # variables
     vars_ms, vars_errs = zeros(N), zeros(N)
