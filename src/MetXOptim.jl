@@ -39,12 +39,12 @@ module MetXOptim
     include("OpModelUtils/linobj_dep.jl")
     include("OpModelUtils/net_interface.jl")
     include("OpModelUtils/objectives.jl")
-    include("OpModelUtils/r2_fba.jl")
 
     #! include LEPModelUtils
     include("LEPModelUtils/boxing.jl")
     include("LEPModelUtils/fba.jl")
     include("LEPModelUtils/fva.jl")
+    include("LEPModelUtils/r2_fba.jl")
     include("LEPModelUtils/vertexes.jl")
 
     # exports
