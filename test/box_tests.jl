@@ -9,27 +9,17 @@ let
 
     verbose = true
 
-    model_id = "ecoli_core"
-    net1 = pull_net(model_id)
-    lep1 = lepmodel(net1)
+    model_id = "ECC2"
+    net0 = pull_net(model_id)
+    lep0 = lepmodel(net0)
+    @time lep1 = box(lep0, TH_TESTS_LINSOLVER; nths = 3, verbose)
+    @time lep2 = box(lep0, TH_TESTS_LINSOLVER; nths = 1, verbose)
     
-    glc_ex = extras(net1, "EX_GLC")
-    biom_id = extras(net1, "BIOM")
+    @test all(size(lep0) .>= size(lep1))
+    @test all(size(lep0) .>= size(lep2))
+    @test all(size(lep1) .== size(lep2))
+    @test isapprox(lb(lep1), lb(lep2); atol = 1e-5)
+    @test isapprox(ub(lep1), ub(lep2); atol = 1e-5)
     
-    # box
-    println()
-    lep2 = box(lep1, TESTS_LINSOLVER; 
-        verbose, protect_obj = true
-    )
-
-    sol1 = solution(fba(lep1, TESTS_LINSOLVER), biom_id)
-    sol2 = solution(fba(lep2, TESTS_LINSOLVER), biom_id)
-    @show sol1
-    @show size(lep1)
-    @show sol2
-    @show size(lep2)
-    
-    @test all(size(lep1) .>= size(lep2))
-    @test isapprox(sol1, sol2; atol = 1e-6)
     
 end

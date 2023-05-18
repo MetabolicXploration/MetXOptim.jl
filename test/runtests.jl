@@ -23,5 +23,4 @@ using MetXNetHub
     include("fva_tests.jl")
     include("box_tests.jl")
     include("echelonize_tests.jl")
-    
 end

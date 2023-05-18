@@ -17,16 +17,16 @@ let
     fva_bounds_file = joinpath(TEST_DATDIR, string(model_id, "--fba-sol.tsv"))
     sol1 = _read_tsv(Float64, fva_bounds_file) |> first
 
-    @test all(isapprox.(sol0, sol1; atol = 1e-8))
+    @test isapprox(sol0, sol1; atol = 1e-8)
 
     # EchelonLEPModel
     elep = EchelonLEPModel(lepX)
     eopm = fba(elep, TESTS_LINSOLVER)
 
-    @test isapprox.(
+    @test isapprox(
         solution(eopm, colids(elep)),
         solution(opm, colids(elep));
         atol = 1e-8
-    ) |> all
+    )
 
 end

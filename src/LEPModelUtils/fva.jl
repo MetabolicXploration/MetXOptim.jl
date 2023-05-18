@@ -3,19 +3,14 @@
 export fva_th
 function fva_th(lep::LEPModel, solver, ridxs = eachindex(colids(lep));
         verbose = false,
+        nths = nthreads(),
         oniter = nothing,
         opmodel_kwargs...
     )
-
-    nths = nthreads()
     
     # models pool
-    opm_pool = [ 
-        FBAOpModel(lep, solver; opmodel_kwargs...)
-        for _ in 1:nths
-    ]
+    opm_pool = Dict{Int, OpModel}()
     
-    nths = nthreads()
     ridxs = colindex(lep, ridxs)
 
     # bounds
@@ -23,24 +18,26 @@ function fva_th(lep::LEPModel, solver, ridxs = eachindex(colids(lep));
     fvaub = ub(lep, ridxs) |> copy
 
     # verbose
-    bal = zeros(Int, nths)
+    bal = Dict{Int, Int}()
     verbose && (prog = Progress(length(ridxs); desc = "Doing FVA (-t$nths)  "))
     _upprog = (opm) -> begin
         verbose && next!(prog; showvalues = [(:th, threadid()), (:load, bal)])
         return nothing
     end
     
-    ch = chunkedChannel(ridxs; 
-        nchnks = 2*nths
-    )
+    ch = chunkedChannel(ridxs; nchnks = 2*nths)
 
     @threads for _ in 1:2*nths
         th = threadid()
         for chk in ch
             
+            get!(bal, th, 0)
             bal[th] += 1
 
-            opm = opm_pool[th]
+            opm = get(opm_pool, th) do 
+                FBAOpModel(lep, solver; opmodel_kwargs...)
+            end
+
             _ridxs = collect(chk)
             _lbs, _ubs = _fva!(opm, _ridxs;
                 oniter = [_upprog, oniter]
@@ -56,13 +53,13 @@ end
 
 # ------------------------------------------------------------------
 function fva(lep::LEPModel, solver, ridxs = eachindex(colids(lep));
-        th = false,
+        nths = 1,
         verbose = false,
         oniter = nothing,
         opmodel_kwargs...
     )
-    if th
-        return fva_th(lep, solver, ridxs; verbose, oniter, opmodel_kwargs...)
+    if nths > 1
+        return fva_th(lep, solver, ridxs; verbose, nths, oniter, opmodel_kwargs...)
     else
         opm = FBAOpModel(lep, solver; opmodel_kwargs...)
         return fva!(opm, ridxs; verbose, oniter)

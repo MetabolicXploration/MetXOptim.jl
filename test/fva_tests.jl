@@ -24,12 +24,12 @@ let
         # FVA
         verbose = true
         println("\n", "MetXOptim: ", "fva")
-        @time netX_fvalb, netX_fvaub = fva(netX, TESTS_LINSOLVER; verbose)
+        @time netX_fvalb, netX_fvaub = fva(netX, TESTS_LINSOLVER; verbose, nths = 1)
         
         # TODO: solve GLPK treading issue
         println("\n", "MetXOptim: ", "fva_th")
-        # @time netX_th_fvalb, netX_th_fvaub = fva(netX, TESTS_LINSOLVER; verbose, th = true)
-        netX_th_fvalb, netX_th_fvaub = netX_fvalb, netX_fvaub # temp hack
+        @time netX_th_fvalb, netX_th_fvaub = fva(netX, TH_TESTS_LINSOLVER; verbose, nths = 3)
+        # netX_th_fvalb, netX_th_fvaub = netX_fvalb, netX_fvaub # temp hack
         
         # --------------------
         # COBREXA (COBREXA_test_data script)
@@ -60,9 +60,9 @@ let
             ylabel = "diff",
             canvas = DotCanvas
         )
-        lineplot!(p, netX_fvaub .- netX_th_fvaub; name="netX_fvaub .- netX_th_fvaub")
-        lineplot!(p, netX_fvalb .- netCB_fvalb; name="netX_fvalb .- netCB_fvalb")
-        lineplot!(p, netX_fvaub .- netCB_fvaub; name="netX_fvaub .- netCB_fvalu")
+        lineplot!(p, netX_fvaub .- netX_th_fvaub; name = "netX_fvaub .- netX_th_fvaub")
+        lineplot!(p, netX_fvalb .- netCB_fvalb; name = "netX_fvalb .- netCB_fvalb")
+        lineplot!(p, netX_fvaub .- netCB_fvaub; name = "netX_fvaub .- netCB_fvalu")
         
         println()
         println(p)

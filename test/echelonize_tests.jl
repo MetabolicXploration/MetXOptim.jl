@@ -22,7 +22,7 @@ let
     biom1 = solution(sol1, biom_ider)
     flxs1 = solution(sol1, rxns0)
     @show biom1
-    @test all(isapprox.(flxs0, flxs1; atol = 1e-8))
+    @test isapprox(flxs0, flxs1; atol = 1e-8)
 
     println()
 

@@ -34,7 +34,7 @@ let
         biom_glc_file = joinpath(TEST_DATDIR, string(model_id, "--biom-glc.tsv"))
         netCB_biomv = _read_tsv(Float64, biom_glc_file) |> first
         
-        @test all(isapprox.(netX_biomv, netCB_biomv; atol = 1e-8))
+        @test isapprox(netX_biomv, netCB_biomv; atol = 1e-8)
         
         # Plots
         if isnothing(p)
