@@ -96,6 +96,9 @@ end
 
 ## ------------------------------------------------------------------------------
 # Standard linear objective
+
+# TODO: rename/redo this. It is hard to use
+
 # It MAXIMIZE c' * v[idx]
 const _LIN_OBJECTIVE_KEY = :_LIN_OBJECTIVE_KEY
 export set_linear_obj!
