@@ -1,4 +1,5 @@
 ## ------------------------------------------------------------------
+# TODO: Rename to LEPOpModel
 function FBAOpModel(lep::LEPModel, solver; 
         add_extras!::Function = (opm) -> nothing
     )
