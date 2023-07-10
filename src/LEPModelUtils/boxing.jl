@@ -165,7 +165,6 @@ box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
 # end
 
 # # # TODO: add flag for reducing or not (in addition of specific fluxes protection)
-# # export boxxing
 # # function boxxing(lep::LEPModel; 
 # #         protect = []
 # #     )
@@ -369,7 +368,6 @@ box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
 # _fit_lb_target_upfun!(target_flx) = (opm, b) -> lb!(opm, target_flx, b)
 # _fit_ub_target_upfun!(target_flx) = (opm, b) -> ub!(opm, target_flx, b)
 
-# export lb_grad_desc!
 # function lb_grad_desc!(
 #         opm::OpModel, ider, obj_target;
 #         x0 = lb(opm, ider),                     # The initial point
@@ -399,7 +397,6 @@ box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
 #     return opm
 # end
 
-# export ub_grad_desc!
 # function ub_grad_desc!(
 #         opm::OpModel, ider, obj_target;
 #         x0 = ub(opm, ider),                     # The initial point

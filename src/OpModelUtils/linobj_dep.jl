@@ -1,5 +1,4 @@
 # tell if a flux is positive proporto or negatively prop the given lin obj
-export objective_dependence
 function _objective_dependence(opm::OpModel, rtol)
     
     # sense 1

@@ -4,18 +4,15 @@ const _CURR_OBJECTIVE_KEY = :_CURR_OBJECTIVE_KEY
 
 ## ------------------------------------------------------------------------------
 import JuMP.objective_function
-export objective_function
 objective_function(opm::OpModel) = jump(opm, _CURR_OBJECTIVE_KEY, nothing)
 
 import JuMP.objective_sense
-export objective_sense
 function objective_sense(opm::OpModel) 
     fbox = jump(opm, _CURR_OBJECTIVE_KEY, nothing)
     isnothing(fbox) ? nothing : fbox.sense
 end
 
 ## ------------------------------------------------------------------------------
-export set_objective_function!
 function set_objective_function!(objsetter!::Function, opm::OpModel, newobjkey::Symbol)
     jpm = jump(opm)
 
@@ -68,7 +65,6 @@ end
 set_last_obj!(opm::OpModel) = set_objective_function!(opm, _CURR_OBJECTIVE_KEY)
 
 ## ------------------------------------------------------------------------------
-export set_objective_sense!
 function set_objective_sense!(opm::OpModel, sense)
     currfbox = objective_function(opm)
     isnothing(currfbox) && error("No objective set!")
@@ -80,7 +76,6 @@ end
 ## ------------------------------------------------------------------------------
 # execute f and ensure the model objective do not change.
 # returns the value of f()
-export keepobj
 function keepobj(f::Function, opm::OpModel)
     fbox = nothing
     try
@@ -101,7 +96,6 @@ end
 
 # It MAXIMIZE c' * v[idx]
 const _LIN_OBJECTIVE_KEY = :_LIN_OBJECTIVE_KEY
-export set_linear_obj!
 function _set_linear_obj!(opm::OpModel, idx, c)
     set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm, idx)
@@ -130,7 +124,7 @@ function set_linear_obj!(opm::OpModel, c::AbstractVector)
 end
 
 set_linear_obj!(opm::OpModel, lep::LEPModel) = 
-    set_linear_obj!(opm, linear_coefficients(lep))
+    set_linear_obj!(opm, linear_weights(lep))
 
 # Set the last linear objective
 set_linear_obj!(opm::OpModel) =
@@ -139,7 +133,6 @@ set_linear_obj!(opm::OpModel) =
 ## ------------------------------------------------------------------------------
 # Standard quad objective
 const _V2_OBJECTIVE_KEY = :_V2_OBJECTIVE_KEY
-export set_v2_obj!
 
 # TODO: rename to quad obj
 
@@ -175,4 +168,4 @@ end
 
 # LEP
 set_v2_obj!(opm::OpModel, lep::LEPModel) = 
-    set_v2_obj!(opm::OpModel, quad_coefficients(lep), MOI.MAX_SENSE)
+    set_v2_obj!(opm::OpModel, quad_weights(lep), MOI.MAX_SENSE)

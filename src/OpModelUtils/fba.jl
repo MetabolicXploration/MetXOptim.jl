@@ -26,7 +26,6 @@ end
 
 ## ------------------------------------------------------------------
 # fba
-export fba, fba!
 function fba!(opm::OpModel) 
     # We can not assume that the current obj is the linear
     set_linear_obj!(opm)

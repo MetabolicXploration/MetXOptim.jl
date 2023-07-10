@@ -9,6 +9,5 @@ struct OpModel <: AbstractOpModel
     # extras
     extras::Dict{Any, Any}
 end
-export OpModel
 
 OpModel(jpm::JuMP.Model) = OpModel(jpm, Dict())

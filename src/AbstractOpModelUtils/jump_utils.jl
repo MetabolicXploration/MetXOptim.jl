@@ -24,7 +24,6 @@ _solution(opm::AbstractOpModel, idxs) = getindex(jump(opm, _OPM_SOLUTION_KEY)::V
 import Base.length
 length(opm::AbstractOpModel) = length(get_jpvars(opm))
 
-export up_con_rhs!
 function up_con_rhs!(
         cons::Vector{<:ConstraintRef}, vals, cidxs
     )
@@ -49,7 +48,6 @@ up_con_rhs!(opm::AbstractOpModel,
 ) = up_con_rhs!(jump(opm, cons_key), vals, cidxs)
 
 import JuMP.delete!
-export delete!
 function delete!(opm::AbstractOpModel, sym::Symbol)
     jpm = jump(opm)
     delete!(jpm, jpm[sym])
@@ -59,7 +57,6 @@ end
 
 # TODO: finish/test this
 import JuMP.set_start_value
-export set_start_value
 function set_start_value(opm::AbstractOpModel, vals)
     xs = get_jpvars(opm)
     for (x, val) in zip(xs, vals)

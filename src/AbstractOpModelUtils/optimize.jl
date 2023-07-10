@@ -1,5 +1,4 @@
 import JuMP.optimize!
-export optimize!
 function optimize!(opm::AbstractOpModel; kwargs...) 
     jpm = jump(opm)
     JuMP.optimize!(jpm; kwargs...)
@@ -7,7 +6,6 @@ function optimize!(opm::AbstractOpModel; kwargs...)
     return opm
 end
 
-export tryoptimize!
 function tryoptimize!(opm::AbstractOpModel; kwargs...) 
     jpm = jump(opm)
     try

@@ -1,6 +1,5 @@
 # ------------------------------------------------------------------
 # TODO: create the OpModel threaded version
-export fva_th
 function fva_th(lep::LEPModel, solver, ridxs = eachindex(colids(lep));
         verbose = false,
         nths = nthreads(),

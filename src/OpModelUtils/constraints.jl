@@ -31,7 +31,7 @@ function set_lin_obj_balance_cons!(fm::OpModel, c::AbstractVector, val)
     )
     return fm
 end
-set_lin_obj_balance_cons!(fm::OpModel, val) = set_lin_obj_balance_cons!(fm, linear_coefficients(fm), val)
+set_lin_obj_balance_cons!(fm::OpModel, val) = set_lin_obj_balance_cons!(fm, linear_weights(fm), val)
 get_obj_balance_cons(fm::OpModel) = jump(fm, _OBJ_BALANCE_CON_KEY)
 del_obj_balance_cons!(fm::OpModel) = _delete!(jump(fm), _OBJ_BALANCE_CON_KEY)
 

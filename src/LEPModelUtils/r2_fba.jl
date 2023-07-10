@@ -13,7 +13,6 @@ end
 ## ------------------------------------------------------------------
 ## ------------------------------------------------------------------
 # TODO: Redo this as a obj stack execution infrastructure 
-export r2_fba!
 function r2_fba!(opm::OpModel; 
         clear_bal_cons = true
     )

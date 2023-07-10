@@ -29,13 +29,13 @@ let
     # Test free box
     fvalb0, fvaub0 = fva(lep1, TESTS_LINSOLVER; verbose = false)
 
-    idxf, idxd = elep.idxf, elep.idxd
-    Nf, Nd = length(idxf), length(idxd)
-    S = lep1.S[:, [idxd; idxf]]
+    idxi, idxd = elep.idxi, elep.idxd
+    Nf, Nd = length(idxi), length(idxd)
+    S = lep1.S[:, [idxd; idxi]]
     G = S[:, (Nd + 1):end]
     b = lep1.b[sortperm(idxd)]
     
-    lbf, ubf = fvalb0[idxf], fvaub0[idxf]
+    lbf, ubf = fvalb0[idxi], fvaub0[idxi]
     rangef = (ubf .- lbf)
     @time for t in 1:Int(1e5)
         vf = (t == 1) ? lbf : # test extreme

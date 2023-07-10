@@ -1,5 +1,4 @@
 # TODO: create a size(opm::OpModel)
-export rxn_extrema!
 function rxn_extrema!(opm::OpModel, ri::Int)
     
     # max
@@ -15,7 +14,6 @@ function rxn_extrema!(opm::OpModel, ri::Int)
     return lb, ub
 end
 
-export rxn_extrema
 rxn_extrema(opm::OpModel, ridx::Int; T = Float64) = keepobj(() -> rxn_extrema!(opm, ridx; T), opm)
 
 # ------------------------------------------------------------------
@@ -40,7 +38,6 @@ function _fva!(opm::OpModel, ridxs;
     return fvalb, fvaub
 end
 
-export fva!
 function fva!(opm::OpModel, ridxs;
         oniter = nothing,
         verbose = true
@@ -63,7 +60,6 @@ function fva!(opm::OpModel, ridxs;
     return ret
 end
 
-export fva
 fva(opm::OpModel, args...; kwargs...) = keepobj(() -> fva!(opm, args...; kwargs...), opm)
 
 
