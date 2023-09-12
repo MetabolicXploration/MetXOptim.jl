@@ -14,7 +14,7 @@ rowids(opm::OpModel) = extras(opm, :rowids)::Union{Nothing, Vector{String}}
 import MetXBase.lb
 import MetXBase.lb!
 lb(opm::OpModel) = JuMP.normalized_rhs.(get_lower_bound_cons(opm))::Vector{Float64}
-_lb(opm::OpModel, ridx::Int) = JuMP.normalized_rhs.(get_lower_bound_cons(opm)[ridx])::Float64
+_lb(opm::OpModel, ridx::Integer) = JuMP.normalized_rhs.(get_lower_bound_cons(opm)[ridx])::Float64
 _lb(opm::OpModel, ridx) = JuMP.normalized_rhs.(get_lower_bound_cons(opm)[ridx])::Vector{Float64}
 lb(opm::OpModel, ridx) = _lb(opm, colindex(opm, ridx))
 function lb!(opm::OpModel, idxs, lb)
@@ -29,7 +29,7 @@ lb!(opm::OpModel, lb) = lb!(opm, 1:length(get_lower_bound_cons(opm)), lb)
 import MetXBase.ub
 import MetXBase.ub!
 ub(opm::OpModel) = JuMP.normalized_rhs.(get_upper_bound_cons(opm))::Vector{Float64}
-_ub(opm::OpModel, idx::Int) = JuMP.normalized_rhs.(get_upper_bound_cons(opm)[idx])::Float64
+_ub(opm::OpModel, idx::Integer) = JuMP.normalized_rhs.(get_upper_bound_cons(opm)[idx])::Float64
 _ub(opm::OpModel, idx) = JuMP.normalized_rhs.(get_upper_bound_cons(opm)[idx])::Vector{Float64}
 ub(opm::OpModel, ider) = _ub(opm, colindex(opm, ider))
 function ub!(opm::OpModel, idxs, ub)
