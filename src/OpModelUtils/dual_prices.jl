@@ -23,7 +23,8 @@ end
 function bound_dual_prices(opm::OpModel, v0_id, test_points, bound_id; 
         delta_mat = nothing, 
         obj_delta_vec = nothing,
-        optimize_fun! = optimize!
+        optimize_fun! = optimize!, 
+        dovars = true
     )
     
     v0i = colindex(opm, v0_id)
@@ -37,7 +38,7 @@ function bound_dual_prices(opm::OpModel, v0_id, test_points, bound_id;
     
     P = length(test_points)
     N = length(colids(opm))
-    if isnothing(delta_mat)
+    if dovars && isnothing(delta_mat)
         delta_mat = zeros(P, N) # delta_mat[test_point, flux] 
     end
     if isnothing(obj_delta_vec)
@@ -46,7 +47,9 @@ function bound_dual_prices(opm::OpModel, v0_id, test_points, bound_id;
     for (i, b) in enumerate(test_points)
         setter!(opm, v0i, b)
         optimize_fun!(opm)
-        delta_mat[i, :] .= solution(opm)
+        if dovars
+            delta_mat[i, :] .= solution(opm)
+        end
         obj_delta_vec[i] = objective_value(opm)
 
     end
@@ -61,9 +64,13 @@ function bound_dual_prices(opm::OpModel, v0_id, test_points, bound_id;
     # @show obj_delta_vec
 
     # variables
-    vars_ms, vars_errs = zeros(N), zeros(N)
-    for (i, rxn_vals) in enumerate(eachcol(delta_mat))
-        _, vars_ms[i], vars_errs[i] = _linear_fit(test_points, rxn_vals)
+    if dovars
+        vars_ms, vars_errs = zeros(N), zeros(N)
+        for (i, rxn_vals) in enumerate(eachcol(delta_mat))
+            _, vars_ms[i], vars_errs[i] = _linear_fit(test_points, rxn_vals)
+        end
+    else
+        vars_ms, vars_errs =  Float64[], Float64[]
     end
     return obj_m, obj_err, vars_ms, vars_errs
 end
@@ -94,7 +101,8 @@ function flux_dual_prices(opm::OpModel, v0_id, test_points;
         dx = 0.0, 
         delta_mat = nothing, 
         obj_delta_vec = nothing,
-        optimize_fun! = optimize!
+        optimize_fun! = optimize!, 
+        dovars = triue
     )
 
     v0i = colindex(opm, v0_id)
@@ -102,7 +110,7 @@ function flux_dual_prices(opm::OpModel, v0_id, test_points;
 
     P = length(test_points)
     N = length(colids(opm))
-    if isnothing(delta_mat)
+    if dovars && isnothing(delta_mat)
         delta_mat = zeros(P, N) # delta_mat[test_point, flux] 
     end
     if isnothing(obj_delta_vec)
@@ -112,7 +120,9 @@ function flux_dual_prices(opm::OpModel, v0_id, test_points;
         
         bounds!(opm, v0i, b - dx, b + dx)
         optimize_fun!(opm)
-        delta_mat[i, :] = solution(opm)
+        if dovars
+            delta_mat[i, :] = solution(opm)
+        end
         obj_delta_vec[i] = objective_value(opm)
     end
     bounds!(opm, v0i, v0lb_bk, v0ub_bk)
@@ -123,9 +133,13 @@ function flux_dual_prices(opm::OpModel, v0_id, test_points;
     _, obj_m, obj_err = _linear_fit(test_points, obj_delta_vec)
 
     # variables
-    vars_ms, vars_errs = zeros(N), zeros(N)
-    for (i, rxn_vals) in enumerate(eachcol(delta_mat))
-        _, vars_ms[i], vars_errs[i] = _linear_fit(test_points, rxn_vals)
+    if dovars
+        vars_ms, vars_errs = zeros(N), zeros(N)
+        for (i, rxn_vals) in enumerate(eachcol(delta_mat))
+            _, vars_ms[i], vars_errs[i] = _linear_fit(test_points, rxn_vals)
+        end
+    else
+        vars_ms, vars_errs = Float64[], Float64[]
     end
     
     return obj_m, obj_err, vars_ms, vars_errs
