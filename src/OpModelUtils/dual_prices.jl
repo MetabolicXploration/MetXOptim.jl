@@ -3,14 +3,14 @@
 
 ## ------------------------------------------------------------------
 ## ------------------------------------------------------------------
-function _lb_safe_setter!(opm, v0i::Int, l)
+function _lb_safe_setter!(opm, v0i::Integer, l)
     u = ub(opm, v0i)
     u < l && error("u < l detected")
     lb!(opm, v0i, l)
     return nothing
 end
 
-function _ub_safe_setter!(opm, v0i::Int, u)
+function _ub_safe_setter!(opm, v0i::Integer, u)
     l = lb(opm, v0i)
     u < l && error("u < l detected")
     ub!(opm, v0i, u)

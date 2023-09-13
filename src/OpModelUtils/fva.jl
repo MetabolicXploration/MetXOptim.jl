@@ -1,5 +1,7 @@
 # TODO: create a size(opm::OpModel)
-function rxn_extrema!(opm::OpModel, ri::Int)
+function rxn_extrema!(opm::OpModel, ider)
+
+    ri = colindex(opm, ider)
     
     # max
     set_linear_obj!(opm, ri, 1.0)
@@ -14,7 +16,8 @@ function rxn_extrema!(opm::OpModel, ri::Int)
     return lb, ub
 end
 
-rxn_extrema(opm::OpModel, ridx::Int; T = Float64) = keepobj(() -> rxn_extrema!(opm, ridx; T), opm)
+# rxn_extrema(opm::OpModel, ridx::Integer; T = Float64) = keepobj(() -> rxn_extrema!(opm, ridx; T), opm)
+rxn_extrema(opm::OpModel, ider) = keepobj(() -> rxn_extrema!(opm, ider), opm)
 
 # ------------------------------------------------------------------
 function _fva!(opm::OpModel, ridxs; 
