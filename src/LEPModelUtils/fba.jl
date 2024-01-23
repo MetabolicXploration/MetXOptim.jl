@@ -17,6 +17,9 @@ function FBAOpModel(lep::LEPModel, solver;
     # custom estras
     add_extras!(opm)
     
+    # register lin obj
+    set_linear_obj!(opm, lep.c)
+    
     return opm
 end
 

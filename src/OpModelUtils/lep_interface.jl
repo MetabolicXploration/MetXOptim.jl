@@ -54,3 +54,11 @@ end
 import MetXBase.balance
 balance(opm::OpModel) = JuMP.normalized_rhs.(get_balance_cons(opm))::Vector{Float64}
 balance(opm::OpModel, ider) = balance(opm)[rowindex(opm, ider)]
+
+import MetXBase.linear_weights
+function linear_weights(opm::OpModel)
+    fbox = objective_function(opm)
+    isnothing(fbox) && error("Obj function undefined!")
+    !haskey(fbox.extras, :_linear_weights) && error("Current obj function is not linear!")
+    return fbox.extras[:_linear_weights]()
+end

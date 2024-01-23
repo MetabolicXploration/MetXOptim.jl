@@ -21,6 +21,7 @@ using MetXNetHub
     include("fba_tests.jl")
     include("linobj_dep_tests.jl")
     include("fva_tests.jl")
+    include("posdef.jl")
     include("box_tests.jl")
     include("echelonize_tests.jl")
 end

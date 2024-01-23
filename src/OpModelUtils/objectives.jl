@@ -32,7 +32,7 @@ function set_objective_function!(objsetter!::Function, opm::OpModel, newobjkey::
     # curr data
     jpm[_CURR_OBJECTIVE_KEY] = fbox
 
-    return opm
+    return fbox
 end
 
 function set_objective_function!(opm::OpModel, fbox::ObjFunBox)
@@ -49,7 +49,7 @@ function set_objective_function!(opm::OpModel, fbox::ObjFunBox)
     # curr data
     jpm[_CURR_OBJECTIVE_KEY] = fbox
 
-    return opm
+    return fbox
 end
 
 function set_objective_function!(opm::OpModel, newobjkey::Symbol)
@@ -94,32 +94,49 @@ end
 
 # TODO: rename/redo this. It is hard to use
 
-# It MAXIMIZE c' * v[idx]
+# MAXIMIZE c' * v[idx]
 const _LIN_OBJECTIVE_KEY = :_LIN_OBJECTIVE_KEY
 function _set_linear_obj!(opm::OpModel, idx, c)
-    set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
+    idx = colindex(opm, idx)
+    fbox = set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm, idx)
         @JuMP.objective(jpm, MOI.MAX_SENSE, c' * v)
+    end
+    # recover c
+    fbox.extras[:_linear_weights] = () -> let
+        _c = zeros(length(colids(opm)))
+        _setindex!(_c, idx, c)
+        return _c
     end
     return opm
 end
 set_linear_obj!(opm::OpModel, idx, c::Real) = _set_linear_obj!(opm, idx, c)
 set_linear_obj!(opm::OpModel, idx, c::AbstractVector) = _set_linear_obj!(opm, idx, c)
 
+# MAXIMIZE v[idx]
 function set_linear_obj!(opm::OpModel, idx, sense::MOI.OptimizationSense)
-    set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
+    idx = colindex(opm, idx)
+    fbox = set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm, idx)
         @JuMP.objective(jpm, sense, sum(v))
+    end
+    # recover c
+    fbox.extras[:_linear_weights] = () -> let
+        _c = zeros(length(colids(opm)))
+        _setindex!(_c, idx, (sense == MAX_SENSE) ? 1.0 : -1.0)
+        return c
     end
     return opm
 end
 
 # It MAXIMIZE c'*v
 function set_linear_obj!(opm::OpModel, c::AbstractVector)
-    set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
+    fbox = set_objective_function!(opm, _LIN_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm)
         @JuMP.objective(jpm, MOI.MAX_SENSE, c' * v)
     end
+    # recover c
+    fbox.extras[:_linear_weights] = () -> c
     return opm
 end
 
@@ -137,7 +154,7 @@ const _V2_OBJECTIVE_KEY = :_V2_OBJECTIVE_KEY
 # TODO: rename to quad obj
 
 function set_v2_obj!(opm::OpModel, sense::MOI.OptimizationSense)
-    set_objective_function!(opm, _V2_OBJECTIVE_KEY) do jpm
+    fbox = set_objective_function!(opm, _V2_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm)
         JuMP.@objective(jpm, sense, v' * v)
     end
@@ -145,10 +162,12 @@ function set_v2_obj!(opm::OpModel, sense::MOI.OptimizationSense)
 end
 
 function set_v2_obj!(opm::OpModel, idxs, sense::MOI.OptimizationSense)
-    set_objective_function!(opm, _V2_OBJECTIVE_KEY) do jpm
+    fbox = set_objective_function!(opm, _V2_OBJECTIVE_KEY) do jpm
         v = get_jpvars(opm, idxs)
         JuMP.@objective(jpm, sense, v' * v)
     end
+    fbox.extras[:_idxs] = idxs
+    fbox.extras[:_sense] = sense
     return opm
 end
 
