@@ -3,7 +3,8 @@ function _just_box!(lep::LEPModel, solver;
         colidxs = eachindex(colids(lep)),
         nths = 1,
         verbose = false, 
-        round_digs = 8
+        round_digs = 8, 
+        eps = 0.0,
     )
 
     # fva bounds
@@ -11,6 +12,22 @@ function _just_box!(lep::LEPModel, solver;
     lb1, ub1 = fva(lep, solver, colidxs; nths,  verbose)
     lb1 .= round.(lb1; digits = round_digs)
     ub1 .= round.(ub1; digits = round_digs)
+
+    # round bounds
+    @inbounds for ri in eachindex(lb1)
+        lb1[ri] = round(lb1[ri]; digits = round_digs)
+        ub1[ri] = round(ub1[ri]; digits = round_digs)
+    end
+
+    # range eps
+    if !iszero(eps)
+        @inbounds for ri in eachindex(lb1)
+            if lb1[ri] == ub1[ri] # fixxed
+                lb1[ri] = (lb1[ri] - eps)
+                ub1[ri] = (ub1[ri] + eps)
+            end
+        end
+    end
 
     # Update bounds
     lb!(lep, lb1)
@@ -66,14 +83,22 @@ function box(lep::LEPModel, solver;
     )
 
     if reduce
-        lep = _reduce_and_box(lep, solver; colidxs, nths, verbose, round_digs, eps, protect)
+        lep = _reduce_and_box(lep, solver; 
+            colidxs, nths, 
+            verbose, round_digs, 
+            eps, protect
+        )
     else
         # copy
         lep = LEPModel(lep; 
             lb = copy(lb(lep)),
             ub = copy(ub(lep)),
         )
-        _just_box!(lep, solver; colidxs, nths, verbose, round_digs)
+        _just_box!(lep, solver; 
+            colidxs, nths, 
+            verbose, round_digs, 
+            eps
+        )
     end
     
     return lep
