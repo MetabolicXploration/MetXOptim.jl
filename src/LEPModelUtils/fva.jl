@@ -26,7 +26,7 @@ function fva_th(lep::LEPModel, solver, ridxs = eachindex(colids(lep));
     
     ch = chunkedChannel(ridxs; nchnks = 2*nths)
 
-    @threads for _ in 1:nths
+    @threads :static for _ in 1:nths
         th = threadid()
         for chk in ch
             
