@@ -8,8 +8,7 @@ end
 
 function tryoptimize!(opm::AbstractOpModel; kwargs...) 
     jpm = jump(opm)
-    try
-        JuMP.optimize!(jpm; kwargs...)
+    try; JuMP.optimize!(jpm; kwargs...)
         _solution!(jpm) # save solution
     catch err
         _solution!(jpm, Float64[]) # save solution

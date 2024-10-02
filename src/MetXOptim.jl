@@ -3,6 +3,7 @@
 module MetXOptim
 
     using MetXBase
+    using MetXBase.MassExport
     using JuMP
     using ProgressMeter
     using Base.Threads
@@ -48,6 +49,6 @@ module MetXOptim
     include("LEPModelUtils/vertexes.jl")
 
     # exports
-    @_exportall_non_underscore()
+    @exportall_non_underscore()
 
 end
