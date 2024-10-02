@@ -1,18 +1,18 @@
 name = "MetXOptim"
 uuid = "672bf490-d3aa-44fe-a664-43445036b9de"
 authors = ["The members of MetabolicXploration"]
-version = "0.1.8"
+version = "0.2.0"
 
 [deps]
-Clp = "e2554f3b-3117-50c0-817c-e040a3ddf72d"
+RunTestsEnv = "aeeda050-7d39-4c85-b6eb-65567cadcf4d"
 GLPK = "60bf3e95-4087-53dc-ae20-288a0d20c6a6"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+Clp = "e2554f3b-3117-50c0-817c-e040a3ddf72d"
 Ipopt = "b6b21f68-93f8-5de0-b562-5493be1d77c9"
+Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
+ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
 MetXBase = "0b8c4419-604a-4c8e-9eed-0f79de4a140e"
-ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
-RunTestsEnv = "aeeda050-7d39-4c85-b6eb-65567cadcf4d"
-SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
-Tulip = "6dd1b50a-3aae-11e9-10b5-ef983d2400fa"
 
 [compat]
 julia = "1.6"
