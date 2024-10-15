@@ -17,26 +17,17 @@ function fva_th(lep::LEPModel, solver, ridxs = eachindex(colids(lep));
     fvaub = ub(lep, ridxs) |> copy
 
     # verbose
-    bal = Dict{Int, Int}()
     verbose && (prog = Progress(length(ridxs); desc = "Doing FVA (-t$nths)  "))
-    _upprog = (opm) -> begin
-        verbose && next!(prog; showvalues = [(:th, threadid()), (:load, bal)])
+    _upprog = (_) -> begin
+        verbose && next!(prog; showvalues = [(:th, threadid())])
         return nothing
     end
     
     ch = chunkedChannel(ridxs; nchnks = 2*nths)
 
     @threads :static for _ in 1:nths
-        th = threadid()
+        opm = FBAOpModel(lep, solver; opmodel_kwargs...)
         for chk in ch
-            
-            get!(bal, th, 0)
-            bal[th] += 1
-
-            opm = get(opm_pool, th) do 
-                FBAOpModel(lep, solver; opmodel_kwargs...)
-            end
-
             _ridxs = collect(chk)
             _lbs, _ubs = _fva!(opm, _ridxs;
                 oniter = [_upprog, oniter]
