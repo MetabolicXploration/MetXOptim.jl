@@ -37,7 +37,7 @@ function _fva!(opm::OpModel, ridxs;
         run_callbacks(oniter, opm)
     end
 
-    # box
+    # fva_strip
     return fvalb, fvaub
 end
 

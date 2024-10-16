@@ -26,7 +26,7 @@ let
 
     println()
 
-    # Test free box
+    # Test free fva_strip
     fvalb0, fvaub0 = fva(lep1, TESTS_LINSOLVER; verbose = false)
 
     idxi, idxd = elep.idxi, elep.idxd

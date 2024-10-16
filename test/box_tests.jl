@@ -12,8 +12,8 @@ let
     model_id = "ECC2"
     net0 = pull_net(model_id)
     lep0 = lepmodel(net0)
-    @time lep1 = box(lep0, TH_TESTS_LINSOLVER; nths = 3, verbose)
-    @time lep2 = box(lep0, TH_TESTS_LINSOLVER; nths = 1, verbose)
+    @time lep1 = fva_strip(lep0, TH_TESTS_LINSOLVER; nths = 3, verbose)
+    @time lep2 = fva_strip(lep0, TH_TESTS_LINSOLVER; nths = 1, verbose)
     
     @test all(size(lep0) .>= size(lep1))
     @test all(size(lep0) .>= size(lep2))

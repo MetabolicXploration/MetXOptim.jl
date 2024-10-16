@@ -56,7 +56,7 @@ function _reduce_and_box(lep::LEPModel, solver;
     # copy
     lep = deepcopy(lep)
     
-    # box!
+    # fva_strip!
     _just_box!(lep, solver; colidxs, nths, verbose, round_digs)
     
     # reduce
@@ -69,7 +69,7 @@ end
 ## ---------------------------------------------
 # interface
 
-function box(lep::LEPModel, solver; 
+function fva_strip(lep::LEPModel, solver; 
         # fva
         colidxs = eachindex(colids(lep)),
         nths = 1,
@@ -105,7 +105,7 @@ function box(lep::LEPModel, solver;
 end
 
 # lep interface
-box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
+fva_strip(model, args...; kwargs...) = fva_strip(lepmodel(model), args...; kwargs...)
 
 ## ---------------------------------------------
 ## ---------------------------------------------
@@ -113,10 +113,10 @@ box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
 ## ---------------------------------------------
 # DEPRECATED
 
-# function box!(lep::LEPModel, solver; kwargs...) 
+# function fva_strip!(lep::LEPModel, solver; kwargs...) 
 
 #     opm = FBAOpModel(lep, solver)
-#     opm = box!(opm; kwargs...)
+#     opm = fva_strip!(opm; kwargs...)
 
 #     lb!(lep, lb(opm))
 #     ub!(lep, ub(opm))
@@ -124,7 +124,7 @@ box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
 # end
 
 # # TODO: new name sug: inscribe!, fullrank_box
-# function box(lep::LEPModel, solver; 
+# function fva_strip(lep::LEPModel, solver; 
 #         reduce = true,
 #         eps = 0.0, protect = [],
 #         box_kwargs...
@@ -139,7 +139,7 @@ box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
 #         )
 #     end
     
-#     box!(lep, solver; box_kwargs...)
+#     fva_strip!(lep, solver; box_kwargs...)
     
 #     if reduce
 #         empty_fixxed!(lep; eps, protect)
@@ -150,12 +150,12 @@ box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
 # end
 
 # # lep interface
-# box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
+# fva_strip(model, args...; kwargs...) = fva_strip(lepmodel(model), args...; kwargs...)
 
 
-# TODO: Add all functionalities to box(lep::LEPModel...)
+# TODO: Add all functionalities to fva_strip(lep::LEPModel...)
 # ## ------------------------------------------------------------------
-# function box!(opm::OpModel,
+# function fva_strip!(opm::OpModel,
 #         colidxs = eachindex(colids(opm));
 #         verbose = false,
 #         protect_obj = false,
@@ -199,7 +199,7 @@ box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
 # # TODO: del _bound_grad or improve it
 
 # ## ------------------------------------------------------------------
-# # add box bounds but checking an objective (the current at opm) is protected
+# # add fva_strip bounds but checking an objective (the current at opm) is protected
 # function _safe_box!(opm::OpModel, colidxs, box_lb, box_ub; 
 #         batch_len = min(length(opm), 10),
 #         verbose = true,
@@ -222,7 +222,7 @@ box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
 #     for rbatch in rbatchs
 #         rbatch = collect(rbatch)
 
-#         # box!
+#         # fva_strip!
 #         bounds!(opm, rbatch; lb = box_lb[rbatch], ub = box_ub[rbatch])
         
 #         # check
@@ -243,11 +243,11 @@ box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
 #                         (:objval0, objval0),
 #                         (:objval1, objval1),
 #                         (:orig, (lb0[rxi], ub0[rxi])),
-#                         (:box, (box_lb[rxi], box_ub[rxi])),
+#                         (:fva_strip, (box_lb[rxi], box_ub[rxi])),
 #                     ]
 #                 )
                 
-#                 # box! rxi
+#                 # fva_strip! rxi
 #                 bounds!(opm, rxi; lb = box_lb[rxi], ub = box_ub[rxi])
                 
 #                 # check nan
@@ -275,7 +275,7 @@ box(model, args...; kwargs...) = box(lepmodel(model), args...; kwargs...)
 #                         (:objval0, objval0),
 #                         (:objval1, objval1),
 #                         (:orig, (lb0[rxi], ub0[rxi])),
-#                         (:box, (box_lb[rxi], box_ub[rxi])),
+#                         (:fva_strip, (box_lb[rxi], box_ub[rxi])),
 #                     ]
 #                 )
                 
