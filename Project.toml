@@ -1,7 +1,7 @@
 name = "MetXOptim"
 uuid = "672bf490-d3aa-44fe-a664-43445036b9de"
 authors = ["The members of MetabolicXploration"]
-version = "0.2.2"
+version = "0.2.3"
 
 [deps]
 RunTestsEnv = "aeeda050-7d39-4c85-b6eb-65567cadcf4d"
