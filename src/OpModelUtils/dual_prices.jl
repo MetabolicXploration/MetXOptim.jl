@@ -18,8 +18,9 @@ function _ub_safe_setter!(opm, v0i::Integer, u)
 end
 
 # ------------------------------------------------------------------
-# Compute df/d_bound_v0 where f is the current opm obj function.
-# 'interval' set the test points for computing the price
+# Compute df/d_v0 where f is the current opm obj function.
+# That is, price = (f0 - f1) / (v0 - v1) where v0 is bounded by v0_test and v1 is bounded by v1_test
+# 'interval' set the test points for computing the price.
 function bound_dual_prices(opm::OpModel, v0_id, test_points, bound_id; 
         delta_mat = nothing, 
         obj_delta_vec = nothing,
@@ -96,6 +97,8 @@ end
 
 # ------------------------------------------------------------------
 # Compute df/d_v0 where f is the current opm obj function.
+# d_v0 is achived by fixing v0 to a value at a time. 
+# That is, price = (f0 - f1) / (v0 - v1) where v0 = v0_test and v1 = v1_test
 # 'interval' set the test points for computing the price
 function flux_dual_prices(opm::OpModel, v0_id, test_points;
         dx = 0.0, 
