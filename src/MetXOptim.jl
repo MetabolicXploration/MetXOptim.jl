@@ -8,8 +8,6 @@ module MetXOptim
     using ProgressMeter
     using Base.Threads
     using SparseArrays
-    
-    import GLPK, Clp, Ipopt, Tulip
 
     #! include .
     

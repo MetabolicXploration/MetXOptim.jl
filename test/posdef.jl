@@ -6,8 +6,13 @@ let
     println()
 
     net0 = pull_net("ecoli_core")
+    biom0 = extras(net0, "BIOM")
     net1 = posdef(net0;
-        ignore = (rxn) -> startswith(rxn, "EX_")
+        ignore = (rxn) -> begin 
+            startswith(rxn, "EX_") && return true
+            rxn == biom0 && return true
+            return true
+        end
     )
     linear_weights!(net1, extras(net0, "BIOM"), 1)
 

@@ -1,6 +1,6 @@
 # activate env
-using RunTestsEnv
-@activate_testenv
+# using RunTestsEnv
+# @activate_testenv
 
 using Test
 using MetXBase
@@ -8,6 +8,7 @@ using MetXBase.UnicodePlots
 using MetXGEMs
 using MetXOptim
 using MetXNetHub
+using Statistics
 
 
 ## ------------------------------------------------------------------
